@@ -1,4 +1,10 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
 
 * {
   box-sizing: border-box;
@@ -6,4 +12,16 @@
 
 body {
   margin: 0;
+  background: white;
+  color: black;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background: black;
+  color: white;
 }
