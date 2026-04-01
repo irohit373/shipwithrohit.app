@@ -4,6 +4,8 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --surface-light: rgba(255, 255, 255, 0.72);
+  --surface-dark: rgba(0, 0, 0, 0.44);
 }
 
 * {
@@ -14,7 +16,13 @@ body {
   margin: 0;
   background: white;
   color: black;
-  transition: background-color 180ms ease, color 180ms ease;
+  transition: background-color 280ms ease-in-out, color 280ms ease-in-out;
+  background-image:
+    radial-gradient(circle at 10% 8%, rgba(56, 189, 248, 0.14), transparent 38%),
+    radial-gradient(circle at 88% 16%, rgba(16, 185, 129, 0.13), transparent 42%),
+    linear-gradient(rgba(0, 0, 0, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+  background-size: auto, auto, 28px 28px, 28px 28px;
 }
 
 .dark {
@@ -24,4 +32,265 @@ body {
 html.dark body {
   background: black;
   color: white;
+  background-image:
+    radial-gradient(circle at 14% 12%, rgba(56, 189, 248, 0.2), transparent 32%),
+    radial-gradient(circle at 90% 20%, rgba(16, 185, 129, 0.18), transparent 34%),
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: auto, auto, 28px 28px, 28px 28px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.portfolio-shell {
+  position: relative;
+}
+
+.section-card {
+  background: var(--surface-light);
+  backdrop-filter: blur(6px);
+  transition: transform 280ms ease-in-out, box-shadow 280ms ease-in-out, border-color 280ms ease-in-out;
+}
+
+html.dark .section-card {
+  background: var(--surface-dark);
+}
+
+.section-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.1);
+}
+
+html.dark .section-card:hover {
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fade-up 720ms ease-in-out forwards;
+}
+
+.fade-up:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.fade-up:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.fade-up:nth-child(4) {
+  animation-delay: 360ms;
+}
+
+section {
+  animation: slide-in-up 800ms ease-in-out forwards;
+  opacity: 0;
+}
+
+section:nth-of-type(1) {
+  animation-delay: 0ms;
+}
+
+section:nth-of-type(n+2) {
+  animation-delay: 120ms;
+}
+
+.skills-tape-shell::before,
+.skills-tape-shell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  height: 100%;
+  width: 52px;
+  pointer-events: none;
+}
+
+.skills-cards-shell::before,
+.skills-cards-shell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  height: 100%;
+  width: 44px;
+  pointer-events: none;
+}
+
+.skills-cards-shell::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.95), transparent);
+}
+
+.skills-cards-shell::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.95), transparent);
+}
+
+html.dark .skills-cards-shell::before {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.95), transparent);
+}
+
+html.dark .skills-cards-shell::after {
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.95), transparent);
+}
+
+.skills-cards-wrapper {
+  scrollbar-width: none;
+  outline: none;
+}
+
+.skills-cards-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.skills-cards-track {
+  scroll-snap-type: x proximity;
+}
+
+.skills-category-card {
+  scroll-snap-align: start;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+}
+
+html.dark .skills-category-card {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+.skills-tape-shell::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.92), transparent);
+}
+
+.skills-tape-shell::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.92), transparent);
+}
+
+html.dark .skills-tape-shell::before {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.92), transparent);
+}
+
+html.dark .skills-tape-shell::after {
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.92), transparent);
+}
+
+.skills-tape-wrapper {
+  scrollbar-width: none;
+  outline: none;
+}
+
+.skills-tape-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.skills-tape-content {
+  animation: tape-entry 700ms ease-in-out both;
+}
+
+article {
+  animation: fade-in-scale 600ms ease-in-out forwards;
+  transition: transform 280ms ease-in-out, box-shadow 280ms ease-in-out, border-color 280ms ease-in-out;
+}
+
+article:nth-of-type(n) {
+  animation-delay: 100ms;
+}
+
+.skills-tape-pill {
+  animation: tape-float 4.5s ease-in-out infinite;
+  opacity: 0.72;
+  filter: saturate(0.82);
+  transition: opacity 280ms ease-in-out, filter 280ms ease-in-out, transform 280ms ease-in-out, background-color 280ms ease-in-out, color 280ms ease-in-out;
+}
+
+.skills-tape-wrapper:hover .skills-tape-pill,
+.skills-tape-wrapper:focus-within .skills-tape-pill,
+.skills-tape-wrapper:active .skills-tape-pill {
+  opacity: 1;
+  filter: saturate(1);
+}
+
+.skills-tape-pill:nth-child(3n) {
+  animation-delay: 120ms;
+}
+
+.skills-tape-pill:nth-child(4n) {
+  animation-delay: 260ms;
+}
+
+@keyframes tape-entry {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tape-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-card {
+    transition: none;
+  }
+
+  .fade-up {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .skills-tape-content,
+  .skills-tape-pill {
+    animation: none;
+  }
 }

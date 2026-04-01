@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Lenis from "lenis";
+import { useTheme } from "next-themes";
 
 const skills = [
   {
@@ -108,73 +110,276 @@ const highlights = [
   "Improved platform response speed with intelligent caching patterns.",
 ];
 
+const navItems = [
+  { label: "About", href: "#about" },
+  { label: "Skills", href: "#skills" },
+  { label: "Experience", href: "#experience" },
+  { label: "Projects", href: "#projects" },
+  { label: "Contact", href: "#contact" },
+];
+
+const quickStats = [
+  { label: "Products Built", value: "12+" },
+  { label: "AI/ML Projects", value: "6" },
+  { label: "Internships", value: "2" },
+  { label: "Shipping Focus", value: "Fast + Stable" },
+];
+
+const skillTape = skills.flatMap((group) => group.items.map((item) => `${group.category} - ${item}`));
+
 export default function Home() {
-  const [theme, setTheme] = useState("light");
-  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
+  const isThemeReady = typeof resolvedTheme === "string";
+  const [activeSection, setActiveSection] = useState("#about");
+  const lenisRef = useRef(null);
+  const skillTapeWrapperRef = useRef(null);
+  const skillTapeContentRef = useRef(null);
+  const skillTapeLenisRef = useRef(null);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
+    const sectionIds = navItems.map((item) => item.href);
+    const sectionElements = sectionIds
+      .map((id) => document.querySelector(id))
+      .filter(Boolean);
 
-    setTheme(initialTheme);
-    document.documentElement.classList.toggle("dark", initialTheme === "dark");
-    setMounted(true);
+    if (!sectionElements.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries.filter((entry) => entry.isIntersecting);
+        if (!visibleEntries.length) return;
+
+        const topMost = visibleEntries.sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!topMost?.target?.id) return;
+
+        const nextSection = `#${topMost.target.id}`;
+        setActiveSection((prev) => (prev === nextSection ? prev : nextSection));
+      },
+      {
+        root: null,
+        rootMargin: "-20% 0px -60% 0px",
+        threshold: [0.2, 0.4, 0.6],
+      }
+    );
+
+    sectionElements.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 0.72,
+      wheelMultiplier: 1.25,
+      touchMultiplier: 1.2,
+      smoothWheel: true,
+      syncTouch: false,
+    });
+    lenisRef.current = lenis;
+
+    let rafId;
+    const raf = (time) => {
+      lenis.raf(time);
+      rafId = window.requestAnimationFrame(raf);
+    };
+
+    rafId = window.requestAnimationFrame(raf);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, []);
+
+
+
+  useEffect(() => {
+    const wrapper = skillTapeWrapperRef.current;
+    const content = skillTapeContentRef.current;
+
+    if (!wrapper || !content) return;
+
+    const lenisHorizontal = new Lenis({
+      wrapper,
+      content,
+      orientation: "horizontal",
+      gestureOrientation: "both",
+      duration: 0.55,
+      wheelMultiplier: 1.8,
+      touchMultiplier: 1.2,
+      smoothWheel: true,
+      syncTouch: false,
+    });
+
+    skillTapeLenisRef.current = lenisHorizontal;
+    let isInteracting = false;
+
+    const pauseAutoSlide = () => {
+      isInteracting = true;
+    };
+
+    const resumeAutoSlide = () => {
+      isInteracting = false;
+    };
+
+    const onWheel = (event) => {
+      if (Math.abs(event.deltaY) < 0.5 && Math.abs(event.deltaX) < 0.5) return;
+
+      event.preventDefault();
+      const next = wrapper.scrollLeft + event.deltaY + event.deltaX;
+      lenisHorizontal.scrollTo(next, { duration: 0.3 });
+    };
+
+    wrapper.addEventListener("wheel", onWheel, { passive: false });
+    wrapper.addEventListener("mouseenter", pauseAutoSlide);
+    wrapper.addEventListener("mouseleave", resumeAutoSlide);
+    wrapper.addEventListener("focusin", pauseAutoSlide);
+    wrapper.addEventListener("focusout", resumeAutoSlide);
+    wrapper.addEventListener("pointerdown", pauseAutoSlide);
+    wrapper.addEventListener("pointerup", resumeAutoSlide);
+    wrapper.addEventListener("touchstart", pauseAutoSlide, { passive: true });
+    wrapper.addEventListener("touchend", resumeAutoSlide, { passive: true });
+
+    let rafId;
+    const raf = (time) => {
+      if (!isInteracting) {
+        const singleTrackWidth = content.scrollWidth / 2;
+        const autoNext = wrapper.scrollLeft + 1.2;
+
+        lenisHorizontal.scrollTo(autoNext, { immediate: true });
+
+        if (singleTrackWidth > 0 && wrapper.scrollLeft >= singleTrackWidth) {
+          lenisHorizontal.scrollTo(wrapper.scrollLeft - singleTrackWidth, { immediate: true });
+        }
+      }
+
+      lenisHorizontal.raf(time);
+      rafId = window.requestAnimationFrame(raf);
+    };
+
+    rafId = window.requestAnimationFrame(raf);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      wrapper.removeEventListener("wheel", onWheel);
+      wrapper.removeEventListener("mouseenter", pauseAutoSlide);
+      wrapper.removeEventListener("mouseleave", resumeAutoSlide);
+      wrapper.removeEventListener("focusin", pauseAutoSlide);
+      wrapper.removeEventListener("focusout", resumeAutoSlide);
+      wrapper.removeEventListener("pointerdown", pauseAutoSlide);
+      wrapper.removeEventListener("pointerup", resumeAutoSlide);
+      wrapper.removeEventListener("touchstart", pauseAutoSlide);
+      wrapper.removeEventListener("touchend", resumeAutoSlide);
+      lenisHorizontal.destroy();
+      skillTapeLenisRef.current = null;
+    };
   }, []);
 
   const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    if (!isThemeReady) return;
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
+
+  const handleSmoothNav = (event, href) => {
+    if (!href.startsWith("#")) return;
+
+    const target = document.querySelector(href);
+    if (!target) return;
+
+    event.preventDefault();
+    setActiveSection(href);
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(target, { duration: 0.55 });
+    } else {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    window.history.replaceState(null, "", href);
   };
 
   return (
-    <main className="mx-auto max-w-5xl bg-white px-4 py-6 text-black transition-colors dark:bg-black dark:text-white md:px-6 md:py-10">
-      <div className="mb-4 flex justify-end md:mb-6">
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className="border-2 border-black bg-white px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:bg-black dark:hover:bg-white dark:hover:text-black"
-          aria-label="Toggle dark mode"
-        >
-          {mounted ? (theme === "dark" ? "Light Mode" : "Dark Mode") : "Theme"}
-        </button>
+    <main className="portfolio-shell mx-auto max-w-6xl px-4 py-6 text-black transition-colors dark:text-white md:px-6 md:py-10">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between md:mb-8">
+        <p className="inline-flex w-fit border border-black/20 bg-white/70 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] backdrop-blur dark:border-white/30 dark:bg-black/40">
+          shipwithrohit.app
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          {navItems.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              onClick={(event) => handleSmoothNav(event, item.href)}
+              aria-current={activeSection === item.href ? "page" : undefined}
+              className={`border px-3 py-1 text-[11px] font-black uppercase tracking-widest transition-colors ${
+                activeSection === item.href
+                  ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
+                  : "border-black/40 bg-white/70 hover:bg-black hover:text-white dark:border-white/40 dark:bg-black/50 dark:hover:bg-white dark:hover:text-black"
+              }`}
+            >
+              {item.label}
+            </a>
+          ))}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="border-2 border-black bg-white px-3 py-1 text-[11px] font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:bg-black dark:hover:bg-white dark:hover:text-black"
+            aria-label="Toggle dark mode"
+            disabled={!isThemeReady}
+          >
+            {isThemeReady ? (resolvedTheme === "dark" ? "Switch To Light" : "Switch To Dark") : "Theme"}
+          </button>
+        </div>
       </div>
 
-      <section id="home" className="border-2 border-black px-6 py-10 transition-colors dark:border-white md:px-10 md:py-16 lg:min-h-[86vh] lg:py-20">
-        <p className="mb-4 text-[10px] font-black uppercase tracking-[0.24em] text-black/50 dark:text-white/50">shipwithrohit.app</p>
-        <h1 className="text-5xl font-black uppercase leading-[0.9] tracking-tighter md:text-7xl lg:text-8xl">
-          Rohit Deshmukh
-        </h1>
-        <p className="mt-3 text-xs font-black uppercase tracking-[0.3em] text-black/40 dark:text-white/40 md:text-sm">
-          Full Stack Developer / AI Product Builder
-        </p>
-        <p className="mt-8 max-w-4xl text-lg font-bold leading-loose md:text-xl">
-          I design and ship clean digital products where engineering meets business impact.
-          From recruitment intelligence to ML-enabled search, I focus on systems that scale,
-          move fast, and create measurable outcomes.
-        </p>
-        <p className="mt-6 border-l-2 border-black pl-4 font-mono text-xs uppercase leading-relaxed tracking-widest text-black/60 dark:border-white dark:text-white/60 md:text-sm">
-          Building practical software. Shipping with intent. Optimizing for real users.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-2">
-          <a
-            href="#projects"
-            className="border-2 border-black bg-black px-4 py-2 text-sm font-black uppercase tracking-tight text-white transition-colors hover:bg-white hover:text-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white"
-          >
-            Explore Projects
-          </a>
-          <a
-            href="#contact"
-            className="border-2 border-black px-4 py-2 text-sm font-black uppercase tracking-tight transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
-          >
-            Let us Collaborate
-          </a>
+      <section id="home" className="section-card relative overflow-hidden border-2 border-black px-6 py-10 transition-colors dark:border-white md:px-10 md:py-16 lg:min-h-[86vh] lg:py-20">
+        <div className="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-emerald-300/40 blur-3xl dark:bg-emerald-400/20" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-cyan-300/35 blur-3xl dark:bg-cyan-500/20" aria-hidden="true" />
+        <div className="relative z-10 grid gap-8 lg:grid-cols-[1fr_auto] lg:gap-10">
+          <div>
+            <h1 className="fade-up text-5xl font-black uppercase leading-[0.86] tracking-tighter md:text-7xl lg:text-8xl">
+              Rohit Deshmukh
+            </h1>
+            <p className="fade-up mt-3 text-xs font-black uppercase tracking-[0.3em] text-black/50 dark:text-white/40 md:text-sm">
+              Full Stack Developer / AI Product Builder
+            </p>
+            <p className="fade-up mt-8 max-w-4xl text-lg font-bold leading-loose md:text-xl">
+              I design and ship clean digital products where engineering meets business impact.
+              From recruitment intelligence to ML-enabled search, I focus on systems that scale,
+              move fast, and create measurable outcomes.
+            </p>
+            <p className="fade-up mt-6 border-l-2 border-black pl-4 font-mono text-xs uppercase leading-relaxed tracking-widest text-black/60 dark:border-white dark:text-white/60 md:text-sm">
+              Building practical software. Shipping with intent. Optimizing for real users.
+            </p>
+            <div className="fade-up mt-8 flex flex-wrap gap-2">
+              <a
+                href="#projects"
+                onClick={(event) => handleSmoothNav(event, "#projects")}
+                className="border-2 border-black bg-black px-4 py-2 text-sm font-black uppercase tracking-tight text-white transition-colors hover:bg-white hover:text-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white"
+              >
+                Explore Projects
+              </a>
+              <a
+                href="#contact"
+                onClick={(event) => handleSmoothNav(event, "#contact")}
+                className="border-2 border-black px-4 py-2 text-sm font-black uppercase tracking-tight transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
+              >
+                Let us Collaborate
+              </a>
+            </div>
+          </div>
+
+          <aside className="fade-up grid w-full max-w-xs grid-cols-2 gap-2 self-end sm:max-w-sm lg:grid-cols-1 lg:gap-3">
+            {quickStats.map((stat) => (
+              <article key={stat.label} className="border-2 border-black bg-white/80 p-3 backdrop-blur dark:border-white dark:bg-black/45">
+                <p className="text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/50">{stat.label}</p>
+                <p className="mt-1 text-base font-black uppercase tracking-tight">{stat.value}</p>
+              </article>
+            ))}
+          </aside>
         </div>
       </section>
 
-      <section id="about" className="mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="about" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">About</p>
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">A bit about me</h2>
         <p className="font-bold leading-loose">
@@ -188,12 +393,15 @@ export default function Home() {
         </p>
       </section>
 
-      <section id="skills" className="mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="skills" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Skills</p>
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Engineering stack</h2>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {skills.map((group) => (
-            <article key={group.category} className="border-2 border-black p-4 transition-colors dark:border-white">
+            <article
+              key={group.category}
+              className="skills-category-card relative border-2 border-black bg-white/80 p-4 transition-colors dark:border-white dark:bg-black/45"
+            >
               <h3 className="text-sm font-black uppercase tracking-widest">{group.category}</h3>
               <ul className="mt-3 space-y-1 pl-5 font-bold">
                 {group.items.map((item) => (
@@ -203,9 +411,33 @@ export default function Home() {
             </article>
           ))}
         </div>
+
+        <div className="mt-6 border-2 border-black/70 bg-white/60 p-3 dark:border-white/60 dark:bg-black/40">
+          <p className="mb-3 text-[10px] font-black uppercase tracking-[0.22em] text-black/60 dark:text-white/60">Horizontal Lenis Skill Tape</p>
+          <div className="skills-tape-shell relative overflow-hidden">
+            <div
+              ref={skillTapeWrapperRef}
+              className="skills-tape-wrapper overflow-x-scroll"
+              role="region"
+              aria-label="Horizontally scrollable skills list"
+              tabIndex={0}
+            >
+              <div ref={skillTapeContentRef} className="skills-tape-content flex w-max gap-2 py-1">
+                {[...skillTape, ...skillTape].map((skill, index) => (
+                  <span
+                    key={`${skill}-${index}`}
+                    className="skills-tape-pill inline-flex border-2 border-black bg-white px-3 py-2 text-[11px] font-black uppercase tracking-wider text-black transition-transform duration-300 hover:-translate-y-1 hover:bg-black hover:text-white dark:border-white dark:bg-black dark:text-white dark:hover:bg-white dark:hover:text-black"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section id="experience" className="mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="experience" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Experience</p>
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Experience & Education</h2>
         <div className="space-y-4">
@@ -220,7 +452,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="projects" className="mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="projects" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Projects</p>
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Selected work</h2>
         <div className="space-y-4">
@@ -262,7 +494,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="certifications" className="mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="certifications" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Certifications</p>
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Credentials</h2>
         <div className="grid gap-4 md:grid-cols-3">
@@ -285,7 +517,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="contact" className="mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="contact" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Contact</p>
         <h2 className="mb-4 text-3xl font-black uppercase tracking-tight">Let us build together</h2>
         <p className="font-bold leading-loose">If you are building something ambitious, I would love to collaborate.</p>
