@@ -16,6 +16,8 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -e
+
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
             nvm use 20
@@ -25,10 +27,9 @@ jobs:
             npm ci
             npm run build
 
-            if pm2 describe shipwithrohit > /dev/null; then
-              pm2 reload shipwithrohit
-            else
-              pm2 start npm --name "shipwithrohit" -- start
-            fi
-
+            pm2 delete shipwithrohit || true
+            pm2 start npm --name "shipwithrohit" -- start
             pm2 save
+
+            sleep 5
+            curl -f http://127.0.0.1:3000 > /dev/null
