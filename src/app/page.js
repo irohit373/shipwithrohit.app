@@ -131,6 +131,7 @@ export default function Home() {
   const { resolvedTheme, setTheme } = useTheme();
   const isThemeReady = typeof resolvedTheme === "string";
   const [activeSection, setActiveSection] = useState("#about");
+  const [scrollProgress, setScrollProgress] = useState(0);
   const lenisRef = useRef(null);
   const skillTapeWrapperRef = useRef(null);
   const skillTapeContentRef = useRef(null);
@@ -163,6 +164,46 @@ export default function Home() {
     );
 
     sectionElements.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const handleScrollProgress = () => {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const nextProgress = scrollHeight > 0 ? window.scrollY / scrollHeight : 0;
+      setScrollProgress(Math.min(Math.max(nextProgress, 0), 1));
+    };
+
+    handleScrollProgress();
+    window.addEventListener("scroll", handleScrollProgress, { passive: true });
+    window.addEventListener("resize", handleScrollProgress);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollProgress);
+      window.removeEventListener("resize", handleScrollProgress);
+    };
+  }, []);
+
+  useEffect(() => {
+    const revealElements = Array.from(document.querySelectorAll(".reveal"));
+    if (!revealElements.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        rootMargin: "0px 0px -10% 0px",
+        threshold: 0.18,
+      }
+    );
+
+    revealElements.forEach((element) => observer.observe(element));
 
     return () => observer.disconnect();
   }, []);
@@ -299,7 +340,9 @@ export default function Home() {
 
   return (
     <main className="portfolio-shell mx-auto max-w-6xl px-4 py-6 text-black transition-colors dark:text-white md:px-6 md:py-10">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between md:mb-8">
+      <div className="scroll-progress-bar" style={{ transform: `scaleX(${scrollProgress})` }} aria-hidden="true" />
+
+      <div className="sticky top-3 z-40 mb-5 flex flex-col gap-3 border border-black/10 bg-white/65 px-3 py-3 backdrop-blur-xl dark:border-white/10 dark:bg-black/45 sm:flex-row sm:items-center sm:justify-between md:mb-8">
         <p className="inline-flex w-fit border border-black/20 bg-white/70 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] backdrop-blur dark:border-white/30 dark:bg-black/40">
           shipwithrohit.app
         </p>
@@ -322,21 +365,24 @@ export default function Home() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="border-2 border-black bg-white px-3 py-1 text-[11px] font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:bg-black dark:hover:bg-white dark:hover:text-black"
+            className="border-2 border-black bg-white px-3 py-1 text-lg leading-none transition-transform hover:-translate-y-0.5 dark:border-white dark:bg-black"
             aria-label="Toggle dark mode"
             disabled={!isThemeReady}
           >
-            {isThemeReady ? (resolvedTheme === "dark" ? "Switch To Light" : "Switch To Dark") : "Theme"}
+            {isThemeReady ? (resolvedTheme === "dark" ? "☀️" : "🌙") : "◐"}
           </button>
         </div>
       </div>
 
-      <section id="home" className="section-card relative overflow-hidden border-2 border-black px-6 py-10 transition-colors dark:border-white md:px-10 md:py-16 lg:min-h-[86vh] lg:py-20">
+      <section
+        id="home"
+        className="section-card reveal relative overflow-hidden border-2 border-black px-6 py-10 transition-colors dark:border-white md:px-10 md:py-16 lg:min-h-[86vh] lg:py-20"
+      >
         <div className="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-emerald-300/40 blur-3xl dark:bg-emerald-400/20" aria-hidden="true" />
         <div className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-cyan-300/35 blur-3xl dark:bg-cyan-500/20" aria-hidden="true" />
         <div className="relative z-10 grid gap-8 lg:grid-cols-[1fr_auto] lg:gap-10">
           <div>
-            <h1 className="fade-up text-5xl font-black uppercase leading-[0.86] tracking-tighter md:text-7xl lg:text-8xl">
+            <h1 className="fade-up gradient-text text-5xl font-black uppercase leading-[0.86] tracking-tighter md:text-7xl lg:text-8xl">
               Rohit Deshmukh
             </h1>
             <p className="fade-up mt-3 text-xs font-black uppercase tracking-[0.3em] text-black/50 dark:text-white/40 md:text-sm">
@@ -379,7 +425,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="about" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="about" className="section-card reveal mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">About</p>
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">A bit about me</h2>
         <p className="font-bold leading-loose">
@@ -393,7 +439,7 @@ export default function Home() {
         </p>
       </section>
 
-      <section id="skills" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="skills" className="section-card reveal mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Skills</p>
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Engineering stack</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -413,7 +459,6 @@ export default function Home() {
         </div>
 
         <div className="mt-6 border-2 border-black/70 bg-white/60 p-3 dark:border-white/60 dark:bg-black/40">
-          <p className="mb-3 text-[10px] font-black uppercase tracking-[0.22em] text-black/60 dark:text-white/60">Horizontal Lenis Skill Tape</p>
           <div className="skills-tape-shell relative overflow-hidden">
             <div
               ref={skillTapeWrapperRef}
@@ -437,7 +482,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="experience" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="experience" className="section-card reveal mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Experience</p>
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Experience & Education</h2>
         <div className="space-y-4">
@@ -452,12 +497,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="projects" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="projects" className="section-card reveal mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Projects</p>
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Selected work</h2>
         <div className="space-y-4">
           {projects.map((project) => (
-            <article key={project.title} className="border-2 border-black p-4 transition-colors dark:border-white">
+            <article key={project.title} className="project-card reveal border-2 border-black p-4 pt-5 transition-colors dark:border-white">
               <p className="font-mono text-xs font-black uppercase tracking-widest text-black/40 dark:text-white/40">{project.date}</p>
               <h3 className="mt-2 text-xl font-black uppercase tracking-tight">{project.title}</h3>
               <p className="mt-3 font-bold leading-loose">{project.description}</p>
@@ -494,7 +539,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="certifications" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="certifications" className="section-card reveal mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Certifications</p>
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Credentials</h2>
         <div className="grid gap-4 md:grid-cols-3">
@@ -517,14 +562,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="contact" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
+      <section id="contact" className="section-card reveal mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
         <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Contact</p>
         <h2 className="mb-4 text-3xl font-black uppercase tracking-tight">Let us build together</h2>
         <p className="font-bold leading-loose">If you are building something ambitious, I would love to collaborate.</p>
         <div className="mt-5 flex flex-wrap gap-2">
           <a
             href="mailto:deshmukhrohit373@gmail.com"
-            className="border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
+            className="contact-link-gradient border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
           >
             deshmukhrohit373@gmail.com
           </a>
@@ -532,7 +577,7 @@ export default function Home() {
             href="https://github.com/irohit373"
             target="_blank"
             rel="noopener noreferrer"
-            className="border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
+            className="contact-link-gradient border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
           >
             GitHub
           </a>
@@ -540,7 +585,7 @@ export default function Home() {
             href="https://linkedin.com/in/irohit373"
             target="_blank"
             rel="noopener noreferrer"
-            className="border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
+            className="contact-link-gradient border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
           >
             LinkedIn
           </a>

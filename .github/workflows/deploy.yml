@@ -1,0 +1,33 @@
+name: Deploy shipwithrohit.app
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+  steps:
+    - name: Checkout repo (for completeness)
+      uses: actions/checkout@v4
+
+    - name: SSH into Droplet and Deploy
+      uses: appleboy/ssh-action@v0.1.3
+      with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          scripts: | 
+                cd /var/www/shipwithrohit.app
+                git pull origin main
+                npm ci
+                npm run build
+                if pm2 list | grep -q 'shipwithrohit'; then
+                  pm2 reload shipwithrohit
+                else
+                  pm2 start npm --name "shipwithrohit" --start
+                fi
+                pm2 save
+

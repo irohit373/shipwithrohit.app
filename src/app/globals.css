@@ -4,8 +4,22 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --surface-light: rgba(255, 255, 255, 0.72);
-  --surface-dark: rgba(0, 0, 0, 0.44);
+  --font-heading: var(--font-inter);
+  --signature-purple: #7c3aed;
+  --signature-cyan: #06b6d4;
+  --signature-emerald: #10b981;
+  --signature-gradient: linear-gradient(
+    90deg,
+    var(--signature-purple) 0%,
+    var(--signature-cyan) 52%,
+    var(--signature-emerald) 100%
+  );
+  --surface-light: rgba(255, 255, 255, 0.52);
+  --surface-dark: rgba(10, 10, 10, 0.42);
+  --section-border-light: rgba(124, 58, 237, 0.18);
+  --section-border-dark: rgba(255, 255, 255, 0.14);
+  --section-glow-light: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 20px 50px rgba(6, 182, 212, 0.1);
+  --section-glow-dark: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 24px 56px rgba(16, 185, 129, 0.12);
 }
 
 * {
@@ -44,27 +58,69 @@ html {
   scroll-behavior: smooth;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), sans-serif;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--signature-cyan) 24%, white);
+  color: black;
+}
+
+html.dark ::selection {
+  background: color-mix(in srgb, var(--signature-purple) 38%, black);
+  color: white;
+}
+
 .portfolio-shell {
   position: relative;
 }
 
+.gradient-text {
+  background-image: var(--signature-gradient);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-shift 10s ease infinite;
+}
+
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  height: 2px;
+  width: 100%;
+  transform-origin: left center;
+  background: var(--signature-gradient);
+  box-shadow: 0 0 18px rgba(6, 182, 212, 0.45);
+}
+
 .section-card {
   background: var(--surface-light);
-  backdrop-filter: blur(6px);
-  transition: transform 280ms ease-in-out, box-shadow 280ms ease-in-out, border-color 280ms ease-in-out;
+  border-color: var(--section-border-light);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--section-glow-light);
+  transition: transform 280ms ease-in-out, box-shadow 280ms ease-in-out, border-color 280ms ease-in-out, background-color 280ms ease-in-out;
 }
 
 html.dark .section-card {
   background: var(--surface-dark);
+  border-color: var(--section-border-dark);
+  box-shadow: var(--section-glow-dark);
 }
 
 .section-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.1);
-}
-
-html.dark .section-card:hover {
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 1px rgba(124, 58, 237, 0.18),
+    0 24px 60px rgba(6, 182, 212, 0.18);
 }
 
 .fade-up {
@@ -85,17 +141,51 @@ html.dark .section-card:hover {
   animation-delay: 360ms;
 }
 
-section {
-  animation: slide-in-up 800ms ease-in-out forwards;
+.reveal {
   opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 700ms ease, transform 700ms ease;
+  will-change: opacity, transform;
 }
 
-section:nth-of-type(1) {
-  animation-delay: 0ms;
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-section:nth-of-type(n+2) {
-  animation-delay: 120ms;
+.project-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: var(--signature-gradient);
+}
+
+.contact-link-gradient {
+  position: relative;
+}
+
+.contact-link-gradient::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--signature-gradient);
+  transform: scaleX(0.35);
+  transform-origin: left center;
+  transition: transform 220ms ease;
+}
+
+.contact-link-gradient:hover::after,
+.contact-link-gradient:focus-visible::after {
+  transform: scaleX(1);
 }
 
 .skills-tape-shell::before,
@@ -256,14 +346,12 @@ article:nth-of-type(n) {
   }
 }
 
-@keyframes slide-in-up {
+@keyframes gradient-shift {
   from {
-    opacity: 0;
-    transform: translateY(24px);
+    background-position: 0% 50%;
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    background-position: 100% 50%;
   }
 }
 
@@ -283,10 +371,17 @@ article:nth-of-type(n) {
     transition: none;
   }
 
+  .gradient-text,
   .fade-up {
     opacity: 1;
     transform: none;
     animation: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 
   .skills-tape-content,
