@@ -127,19 +127,33 @@ const quickStats = [
 
 const skillTape = skills.flatMap((group) => group.items.map((item) => `${group.category} - ${item}`));
 
+function SectionHeader({ label, title, subtitle }) {
+  return (
+    <div className="section-heading">
+      <p className="section-label">{label}</p>
+      <h2>{title}</h2>
+      {subtitle ? <p className="section-subtitle">{subtitle}</p> : null}
+    </div>
+  );
+}
+
 export default function Home() {
   const { resolvedTheme, setTheme } = useTheme();
   const isThemeReady = typeof resolvedTheme === "string";
   const [activeSection, setActiveSection] = useState("#about");
+  const [isScrolled, setIsScrolled] = useState(false);
   const lenisRef = useRef(null);
-  const skillTapeWrapperRef = useRef(null);
-  const skillTapeContentRef = useRef(null);
-  const skillTapeLenisRef = useRef(null);
 
   useEffect(() => {
-    const sectionIds = navItems.map((item) => item.href);
-    const sectionElements = sectionIds
-      .map((id) => document.querySelector(id))
+    const onScroll = () => setIsScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const sectionElements = navItems
+      .map((item) => document.querySelector(item.href))
       .filter(Boolean);
 
     if (!sectionElements.length) return;
@@ -150,28 +164,26 @@ export default function Home() {
         if (!visibleEntries.length) return;
 
         const topMost = visibleEntries.sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!topMost?.target?.id) return;
-
-        const nextSection = `#${topMost.target.id}`;
-        setActiveSection((prev) => (prev === nextSection ? prev : nextSection));
+        if (topMost?.target?.id) {
+          setActiveSection(`#${topMost.target.id}`);
+        }
       },
       {
         root: null,
-        rootMargin: "-20% 0px -60% 0px",
-        threshold: [0.2, 0.4, 0.6],
+        rootMargin: "-24% 0px -58% 0px",
+        threshold: [0.18, 0.32, 0.5],
       }
     );
 
     sectionElements.forEach((section) => observer.observe(section));
-
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 0.72,
-      wheelMultiplier: 1.25,
-      touchMultiplier: 1.2,
+      duration: 0.78,
+      wheelMultiplier: 1.08,
+      touchMultiplier: 1.1,
       smoothWheel: true,
       syncTouch: false,
     });
@@ -192,90 +204,6 @@ export default function Home() {
     };
   }, []);
 
-
-
-  useEffect(() => {
-    const wrapper = skillTapeWrapperRef.current;
-    const content = skillTapeContentRef.current;
-
-    if (!wrapper || !content) return;
-
-    const lenisHorizontal = new Lenis({
-      wrapper,
-      content,
-      orientation: "horizontal",
-      gestureOrientation: "both",
-      duration: 0.55,
-      wheelMultiplier: 1.8,
-      touchMultiplier: 1.2,
-      smoothWheel: true,
-      syncTouch: false,
-    });
-
-    skillTapeLenisRef.current = lenisHorizontal;
-    let isInteracting = false;
-
-    const pauseAutoSlide = () => {
-      isInteracting = true;
-    };
-
-    const resumeAutoSlide = () => {
-      isInteracting = false;
-    };
-
-    const onWheel = (event) => {
-      if (Math.abs(event.deltaY) < 0.5 && Math.abs(event.deltaX) < 0.5) return;
-
-      event.preventDefault();
-      const next = wrapper.scrollLeft + event.deltaY + event.deltaX;
-      lenisHorizontal.scrollTo(next, { duration: 0.3 });
-    };
-
-    wrapper.addEventListener("wheel", onWheel, { passive: false });
-    wrapper.addEventListener("mouseenter", pauseAutoSlide);
-    wrapper.addEventListener("mouseleave", resumeAutoSlide);
-    wrapper.addEventListener("focusin", pauseAutoSlide);
-    wrapper.addEventListener("focusout", resumeAutoSlide);
-    wrapper.addEventListener("pointerdown", pauseAutoSlide);
-    wrapper.addEventListener("pointerup", resumeAutoSlide);
-    wrapper.addEventListener("touchstart", pauseAutoSlide, { passive: true });
-    wrapper.addEventListener("touchend", resumeAutoSlide, { passive: true });
-
-    let rafId;
-    const raf = (time) => {
-      if (!isInteracting) {
-        const singleTrackWidth = content.scrollWidth / 2;
-        const autoNext = wrapper.scrollLeft + 1.2;
-
-        lenisHorizontal.scrollTo(autoNext, { immediate: true });
-
-        if (singleTrackWidth > 0 && wrapper.scrollLeft >= singleTrackWidth) {
-          lenisHorizontal.scrollTo(wrapper.scrollLeft - singleTrackWidth, { immediate: true });
-        }
-      }
-
-      lenisHorizontal.raf(time);
-      rafId = window.requestAnimationFrame(raf);
-    };
-
-    rafId = window.requestAnimationFrame(raf);
-
-    return () => {
-      window.cancelAnimationFrame(rafId);
-      wrapper.removeEventListener("wheel", onWheel);
-      wrapper.removeEventListener("mouseenter", pauseAutoSlide);
-      wrapper.removeEventListener("mouseleave", resumeAutoSlide);
-      wrapper.removeEventListener("focusin", pauseAutoSlide);
-      wrapper.removeEventListener("focusout", resumeAutoSlide);
-      wrapper.removeEventListener("pointerdown", pauseAutoSlide);
-      wrapper.removeEventListener("pointerup", resumeAutoSlide);
-      wrapper.removeEventListener("touchstart", pauseAutoSlide);
-      wrapper.removeEventListener("touchend", resumeAutoSlide);
-      lenisHorizontal.destroy();
-      skillTapeLenisRef.current = null;
-    };
-  }, []);
-
   const toggleTheme = () => {
     if (!isThemeReady) return;
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
@@ -289,203 +217,176 @@ export default function Home() {
 
     event.preventDefault();
     setActiveSection(href);
+
     if (lenisRef.current) {
-      lenisRef.current.scrollTo(target, { duration: 0.55 });
+      lenisRef.current.scrollTo(target, { duration: 0.62, offset: -88 });
     } else {
       target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+
     window.history.replaceState(null, "", href);
   };
 
   return (
-    <main className="portfolio-shell mx-auto max-w-6xl px-4 py-6 text-black transition-colors dark:text-white md:px-6 md:py-10">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between md:mb-8">
-        <p className="inline-flex w-fit border border-black/20 bg-white/70 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] backdrop-blur dark:border-white/30 dark:bg-black/40">
-          shipwithrohit.app
-        </p>
-        <div className="flex flex-wrap items-center gap-2">
+    <main className="site-shell">
+      <header className={`site-nav ${isScrolled ? "site-nav--scrolled" : ""}`}>
+        <a href="#" className="site-mark" aria-label="Rohit Deshmukh home">
+          shipwithrohit
+        </a>
+
+        <nav className="site-links" aria-label="Main navigation">
           {navItems.map((item) => (
             <a
               key={item.href}
               href={item.href}
               onClick={(event) => handleSmoothNav(event, item.href)}
               aria-current={activeSection === item.href ? "page" : undefined}
-              className={`border px-3 py-1 text-[11px] font-black uppercase tracking-widest transition-colors ${
-                activeSection === item.href
-                  ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
-                  : "border-black/40 bg-white/70 hover:bg-black hover:text-white dark:border-white/40 dark:bg-black/50 dark:hover:bg-white dark:hover:text-black"
-              }`}
+              className={activeSection === item.href ? "is-active" : ""}
             >
               {item.label}
             </a>
           ))}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="border-2 border-black bg-white px-3 py-1 text-[11px] font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:bg-black dark:hover:bg-white dark:hover:text-black"
-            aria-label="Toggle dark mode"
-            disabled={!isThemeReady}
-          >
-            {isThemeReady ? (resolvedTheme === "dark" ? "Switch To Light" : "Switch To Dark") : "Theme"}
-          </button>
-        </div>
-      </div>
+        </nav>
 
-      <section id="home" className="section-card relative overflow-hidden border-2 border-black px-6 py-10 transition-colors dark:border-white md:px-10 md:py-16 lg:min-h-[86vh] lg:py-20">
-        <div className="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-emerald-300/40 blur-3xl dark:bg-emerald-400/20" aria-hidden="true" />
-        <div className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-cyan-300/35 blur-3xl dark:bg-cyan-500/20" aria-hidden="true" />
-        <div className="relative z-10 grid gap-8 lg:grid-cols-[1fr_auto] lg:gap-10">
-          <div>
-            <h1 className="fade-up text-5xl font-black uppercase leading-[0.86] tracking-tighter md:text-7xl lg:text-8xl">
-              Rohit Deshmukh
-            </h1>
-            <p className="fade-up mt-3 text-xs font-black uppercase tracking-[0.3em] text-black/50 dark:text-white/40 md:text-sm">
-              Full Stack Developer / AI Product Builder
-            </p>
-            <p className="fade-up mt-8 max-w-4xl text-lg font-bold leading-loose md:text-xl">
-              I design and ship clean digital products where engineering meets business impact.
-              From recruitment intelligence to ML-enabled search, I focus on systems that scale,
-              move fast, and create measurable outcomes.
-            </p>
-            <p className="fade-up mt-6 border-l-2 border-black pl-4 font-mono text-xs uppercase leading-relaxed tracking-widest text-black/60 dark:border-white dark:text-white/60 md:text-sm">
-              Building practical software. Shipping with intent. Optimizing for real users.
-            </p>
-            <div className="fade-up mt-8 flex flex-wrap gap-2">
-              <a
-                href="#projects"
-                onClick={(event) => handleSmoothNav(event, "#projects")}
-                className="border-2 border-black bg-black px-4 py-2 text-sm font-black uppercase tracking-tight text-white transition-colors hover:bg-white hover:text-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white"
-              >
-                Explore Projects
-              </a>
-              <a
-                href="#contact"
-                onClick={(event) => handleSmoothNav(event, "#contact")}
-                className="border-2 border-black px-4 py-2 text-sm font-black uppercase tracking-tight transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
-              >
-                Let us Collaborate
-              </a>
-            </div>
+        <button type="button" className="theme-toggle" onClick={toggleTheme} disabled={!isThemeReady}>
+          {isThemeReady && resolvedTheme === "dark" ? "Light" : "Dark"}
+        </button>
+      </header>
+
+      <section className="hero-section" aria-labelledby="hero-title">
+        <div className="hero-copy fade-up">
+          <p className="eyebrow">shipwithrohit.app</p>
+          <h1 id="hero-title">Rohit Deshmukh</h1>
+          <p className="hero-role">Full Stack Developer / AI Product Builder</p>
+          <p className="hero-intro">
+            I design and ship clean digital products where engineering meets business impact. From recruitment intelligence to
+            ML-enabled search, I focus on systems that scale, move fast, and create measurable outcomes.
+          </p>
+
+          <div className="hero-actions">
+            <a href="#projects" className="button button-primary" onClick={(event) => handleSmoothNav(event, "#projects")}>
+              Explore projects
+            </a>
+            <a href="#contact" className="button button-ghost" onClick={(event) => handleSmoothNav(event, "#contact")}>
+              Contact
+            </a>
           </div>
-
-          <aside className="fade-up grid w-full max-w-xs grid-cols-2 gap-2 self-end sm:max-w-sm lg:grid-cols-1 lg:gap-3">
-            {quickStats.map((stat) => (
-              <article key={stat.label} className="border-2 border-black bg-white/80 p-3 backdrop-blur dark:border-white dark:bg-black/45">
-                <p className="text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/50">{stat.label}</p>
-                <p className="mt-1 text-base font-black uppercase tracking-tight">{stat.value}</p>
-              </article>
-            ))}
-          </aside>
         </div>
-      </section>
 
-      <section id="about" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
-        <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">About</p>
-        <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">A bit about me</h2>
-        <p className="font-bold leading-loose">
-          I am currently pursuing B.Tech in Computer Science and Business Systems at RGPV, Bhopal. I enjoy solving real-world problems through scalable web engineering and AI-backed features.
-        </p>
-        <p className="mt-4 font-bold leading-loose">
-          My core stack is MERN and Next.js, with strong backend work in Python and PHP ecosystems. I have built recruitment SaaS, ML-based prediction workflows, and education-focused platforms.
-        </p>
-        <p className="mt-4 font-bold leading-loose">
-          I care about maintainable code, measurable performance, and team-friendly delivery. I am open to exciting engineering opportunities.
-        </p>
-      </section>
-
-      <section id="skills" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
-        <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Skills</p>
-        <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Engineering stack</h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {skills.map((group) => (
-            <article
-              key={group.category}
-              className="skills-category-card relative border-2 border-black bg-white/80 p-4 transition-colors dark:border-white dark:bg-black/45"
-            >
-              <h3 className="text-sm font-black uppercase tracking-widest">{group.category}</h3>
-              <ul className="mt-3 space-y-1 pl-5 font-bold">
-                {group.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+        <div className="stats-grid fade-up" aria-label="Quick stats">
+          {quickStats.map((stat) => (
+            <article key={stat.label} className="stat-card">
+              <p>{stat.label}</p>
+              <strong>{stat.value}</strong>
             </article>
           ))}
         </div>
+      </section>
 
-        <div className="mt-6 border-2 border-black/70 bg-white/60 p-3 dark:border-white/60 dark:bg-black/40">
-          <p className="mb-3 text-[10px] font-black uppercase tracking-[0.22em] text-black/60 dark:text-white/60">Horizontal Lenis Skill Tape</p>
-          <div className="skills-tape-shell relative overflow-hidden">
-            <div
-              ref={skillTapeWrapperRef}
-              className="skills-tape-wrapper overflow-x-scroll"
-              role="region"
-              aria-label="Horizontally scrollable skills list"
-              tabIndex={0}
-            >
-              <div ref={skillTapeContentRef} className="skills-tape-content flex w-max gap-2 py-1">
-                {[...skillTape, ...skillTape].map((skill, index) => (
-                  <span
-                    key={`${skill}-${index}`}
-                    className="skills-tape-pill inline-flex border-2 border-black bg-white px-3 py-2 text-[11px] font-black uppercase tracking-wider text-black transition-transform duration-300 hover:-translate-y-1 hover:bg-black hover:text-white dark:border-white dark:bg-black dark:text-white dark:hover:bg-white dark:hover:text-black"
-                  >
-                    {skill}
+      <section id="about" className="page-section">
+        <SectionHeader
+          label="About"
+          title="Practical software, shipped with intent."
+          subtitle="A full-stack builder focused on maintainable systems, useful AI features, and product outcomes."
+        />
+
+        <div className="about-grid">
+          <div className="about-copy">
+            <p>
+              I am currently pursuing B.Tech in Computer Science and Business Systems at RGPV, Bhopal. I enjoy solving
+              real-world problems through scalable web engineering and AI-backed features.
+            </p>
+            <p>
+              My core stack is MERN and Next.js, with strong backend work in Python and PHP ecosystems. I have built
+              recruitment SaaS, ML-based prediction workflows, and education-focused platforms.
+            </p>
+            <p>
+              I care about maintainable code, measurable performance, and team-friendly delivery. I am open to exciting
+              engineering opportunities.
+            </p>
+          </div>
+
+          <div className="highlight-panel">
+            {highlights.map((item) => (
+              <p key={item}>{item}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="skills" className="page-section">
+        <SectionHeader
+          label="Skills"
+          title="Engineering stack"
+          subtitle="A focused toolkit for product-grade web apps, APIs, deployment, and applied AI workflows."
+        />
+
+        <div className="card-grid skills-grid">
+          {skills.map((group) => (
+            <article key={group.category} className="zed-card skill-card">
+              <h3>{group.category}</h3>
+              <div className="pill-wrap">
+                {group.items.map((item) => (
+                  <span key={item} className="pill">
+                    {item}
                   </span>
                 ))}
               </div>
-            </div>
-          </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="skill-tape" aria-label="Skills tape">
+          {[...skillTape, ...skillTape].map((skill, index) => (
+            <span key={`${skill}-${index}`}>{skill}</span>
+          ))}
         </div>
       </section>
 
-      <section id="experience" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
-        <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Experience</p>
-        <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Experience & Education</h2>
-        <div className="space-y-4">
+      <section id="experience" className="page-section">
+        <SectionHeader
+          label="Experience"
+          title="Experience & education"
+          subtitle="A timeline of internships, engineering education, and production-focused learning."
+        />
+
+        <div className="timeline">
           {journey.map((item) => (
-            <article key={`${item.period}-${item.role}`} className="border-2 border-black p-4 transition-colors dark:border-white">
-              <p className="font-mono text-xs font-black uppercase tracking-widest text-black/40 dark:text-white/40">{item.period}</p>
-              <h3 className="mt-2 text-xl font-black uppercase tracking-tight">{item.role}</h3>
-              <p className="mt-1 text-sm font-black uppercase tracking-wide text-black/50 dark:text-white/50">{item.org}</p>
-              <p className="mt-3 font-bold leading-loose">{item.detail}</p>
+            <article key={`${item.period}-${item.role}`} className="timeline-item">
+              <p className="timeline-period">{item.period}</p>
+              <h3>{item.role}</h3>
+              <p className="timeline-org">{item.org}</p>
+              <p>{item.detail}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section id="projects" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
-        <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Projects</p>
-        <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Selected work</h2>
-        <div className="space-y-4">
+      <section id="projects" className="page-section">
+        <SectionHeader
+          label="Projects"
+          title="Selected work"
+          subtitle="Product builds across AI recruiting, ML search, and education platforms."
+        />
+
+        <div className="card-grid project-grid">
           {projects.map((project) => (
-            <article key={project.title} className="border-2 border-black p-4 transition-colors dark:border-white">
-              <p className="font-mono text-xs font-black uppercase tracking-widest text-black/40 dark:text-white/40">{project.date}</p>
-              <h3 className="mt-2 text-xl font-black uppercase tracking-tight">{project.title}</h3>
-              <p className="mt-3 font-bold leading-loose">{project.description}</p>
-              <div className="mt-4 flex flex-wrap gap-2">
+            <article key={project.title} className="zed-card project-card">
+              <p className="card-date">{project.date}</p>
+              <h3>{project.title}</h3>
+              <p>{project.description}</p>
+              <div className="pill-wrap">
                 {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="border border-black px-2 py-1 text-[10px] font-black uppercase tracking-widest transition-colors dark:border-white"
-                  >
+                  <span key={tag} className="pill">
                     {tag}
                   </span>
                 ))}
               </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
-                >
+              <div className="card-links">
+                <a href={project.github} target="_blank" rel="noopener noreferrer">
                   GitHub
                 </a>
-                <a
-                  href={project.live}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border-2 border-black bg-black px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-colors hover:bg-white hover:text-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white"
-                >
+                <a href={project.live} target="_blank" rel="noopener noreferrer">
                   Live
                 </a>
               </div>
@@ -494,58 +395,44 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="certifications" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
-        <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Certifications</p>
-        <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Credentials</h2>
-        <div className="grid gap-4 md:grid-cols-3">
-          {certifications.map((cert) => (
-            <article key={cert.title} className="border-2 border-black p-4 transition-colors dark:border-white">
-              <p className="font-mono text-xs font-black uppercase tracking-widest text-black/40 dark:text-white/40">{cert.date}</p>
-              <h3 className="mt-2 text-base font-black uppercase tracking-tight">{cert.title}</h3>
-              <p className="mt-1 text-xs font-black uppercase tracking-wide text-black/50 dark:text-white/50">{cert.issuer}</p>
-              <p className="mt-3 font-bold leading-loose">{cert.description}</p>
-            </article>
-          ))}
-        </div>
+      <section className="page-section">
+        <SectionHeader
+          label="Credentials"
+          title="Certifications"
+          subtitle="Focused learning across Python, industry application, and agile digital content operations."
+        />
 
-        <div className="mt-4 border-2 border-dashed border-black/20 p-4 transition-colors dark:border-white/20">
-          {highlights.map((item) => (
-            <p key={item} className="font-bold leading-loose">
-              {item}
-            </p>
+        <div className="card-grid certification-grid">
+          {certifications.map((cert) => (
+            <article key={cert.title} className="zed-card certification-card">
+              <p className="card-date">{cert.date}</p>
+              <h3>{cert.title}</h3>
+              <p className="cert-issuer">{cert.issuer}</p>
+              <p>{cert.description}</p>
+            </article>
           ))}
         </div>
       </section>
 
-      <section id="contact" className="section-card mt-6 border-2 border-black p-6 transition-colors dark:border-white md:p-8">
-        <p className="mb-3 text-xs font-black uppercase tracking-widest text-black/50 dark:text-white/50">Contact</p>
-        <h2 className="mb-4 text-3xl font-black uppercase tracking-tight">Let us build together</h2>
-        <p className="font-bold leading-loose">If you are building something ambitious, I would love to collaborate.</p>
-        <div className="mt-5 flex flex-wrap gap-2">
-          <a
-            href="mailto:deshmukhrohit373@gmail.com"
-            className="border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
-          >
-            deshmukhrohit373@gmail.com
-          </a>
-          <a
-            href="https://github.com/irohit373"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
-          >
+      <section id="contact" className="contact-section">
+        <SectionHeader
+          label="Contact"
+          title="Let us build something useful."
+          subtitle="Available for full-stack engineering, AI product builds, and product-minded development work."
+        />
+
+        <div className="contact-links">
+          <a href="mailto:deshmukhrohit373@gmail.com">deshmukhrohit373@gmail.com</a>
+          <a href="https://github.com/irohit373" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>
-          <a
-            href="https://linkedin.com/in/irohit373"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
-          >
+          <a href="https://linkedin.com/in/irohit373" target="_blank" rel="noopener noreferrer">
             LinkedIn
           </a>
         </div>
       </section>
+
+      <footer className="site-footer">© 2026 Rohit Deshmukh</footer>
     </main>
   );
 }

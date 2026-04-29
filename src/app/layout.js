@@ -1,26 +1,41 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans, Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
-const geistSans = Geist({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  variable: "--font-inter",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
-  variable: "--font-geist-mono",
+  weight: ["400", "500", "600"],
+  variable: "--font-ibm-plex-sans",
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-ibm-plex-mono",
+  display: "swap",
 });
 
 export const metadata = {
-  title: "ShipWithRohit",
-  description: "Portfolio of Rohit Deshmukh",
+  title: "Rohit Deshmukh - Full Stack Developer / AI Product Builder",
+  description:
+    "Portfolio of Rohit Deshmukh, a full-stack developer building AI products, scalable web apps, and product-focused engineering systems.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-      <body className="font-sans bg-white text-black dark:bg-black dark:text-white">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable} antialiased`}
+    >
+      <body>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
