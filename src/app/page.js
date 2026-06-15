@@ -132,20 +132,33 @@ const quickStats = [
 
 const skillTape = skills.flatMap((group) => group.items.map((item) => `${group.category} - ${item}`));
 
+function SectionHeader({ label, title, subtitle }) {
+  return (
+    <div className="section-heading">
+      <p className="section-label">{label}</p>
+      <h2>{title}</h2>
+      {subtitle ? <p className="section-subtitle">{subtitle}</p> : null}
+    </div>
+  );
+}
+
 export default function Home() {
   const { resolvedTheme, setTheme } = useTheme();
   const isThemeReady = typeof resolvedTheme === "string";
   const [activeSection, setActiveSection] = useState("#about");
   const [scrollProgress, setScrollProgress] = useState(0);
   const lenisRef = useRef(null);
-  const skillTapeWrapperRef = useRef(null);
-  const skillTapeContentRef = useRef(null);
-  const skillTapeLenisRef = useRef(null);
 
   useEffect(() => {
-    const sectionIds = navItems.map((item) => item.href);
-    const sectionElements = sectionIds
-      .map((id) => document.querySelector(id))
+    const onScroll = () => setIsScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const sectionElements = navItems
+      .map((item) => document.querySelector(item.href))
       .filter(Boolean);
 
     if (!sectionElements.length) return;
@@ -156,20 +169,18 @@ export default function Home() {
         if (!visibleEntries.length) return;
 
         const topMost = visibleEntries.sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!topMost?.target?.id) return;
-
-        const nextSection = `#${topMost.target.id}`;
-        setActiveSection((prev) => (prev === nextSection ? prev : nextSection));
+        if (topMost?.target?.id) {
+          setActiveSection(`#${topMost.target.id}`);
+        }
       },
       {
         root: null,
-        rootMargin: "-20% 0px -60% 0px",
-        threshold: [0.2, 0.4, 0.6],
+        rootMargin: "-24% 0px -58% 0px",
+        threshold: [0.18, 0.32, 0.5],
       }
     );
 
     sectionElements.forEach((section) => observer.observe(section));
-
     return () => observer.disconnect();
   }, []);
 
@@ -215,9 +226,9 @@ export default function Home() {
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 0.72,
-      wheelMultiplier: 1.25,
-      touchMultiplier: 1.2,
+      duration: 0.78,
+      wheelMultiplier: 1.08,
+      touchMultiplier: 1.1,
       smoothWheel: true,
       syncTouch: false,
     });
@@ -238,90 +249,6 @@ export default function Home() {
     };
   }, []);
 
-
-
-  useEffect(() => {
-    const wrapper = skillTapeWrapperRef.current;
-    const content = skillTapeContentRef.current;
-
-    if (!wrapper || !content) return;
-
-    const lenisHorizontal = new Lenis({
-      wrapper,
-      content,
-      orientation: "horizontal",
-      gestureOrientation: "both",
-      duration: 0.55,
-      wheelMultiplier: 1.8,
-      touchMultiplier: 1.2,
-      smoothWheel: true,
-      syncTouch: false,
-    });
-
-    skillTapeLenisRef.current = lenisHorizontal;
-    let isInteracting = false;
-
-    const pauseAutoSlide = () => {
-      isInteracting = true;
-    };
-
-    const resumeAutoSlide = () => {
-      isInteracting = false;
-    };
-
-    const onWheel = (event) => {
-      if (Math.abs(event.deltaY) < 0.5 && Math.abs(event.deltaX) < 0.5) return;
-
-      event.preventDefault();
-      const next = wrapper.scrollLeft + event.deltaY + event.deltaX;
-      lenisHorizontal.scrollTo(next, { duration: 0.3 });
-    };
-
-    wrapper.addEventListener("wheel", onWheel, { passive: false });
-    wrapper.addEventListener("mouseenter", pauseAutoSlide);
-    wrapper.addEventListener("mouseleave", resumeAutoSlide);
-    wrapper.addEventListener("focusin", pauseAutoSlide);
-    wrapper.addEventListener("focusout", resumeAutoSlide);
-    wrapper.addEventListener("pointerdown", pauseAutoSlide);
-    wrapper.addEventListener("pointerup", resumeAutoSlide);
-    wrapper.addEventListener("touchstart", pauseAutoSlide, { passive: true });
-    wrapper.addEventListener("touchend", resumeAutoSlide, { passive: true });
-
-    let rafId;
-    const raf = (time) => {
-      if (!isInteracting) {
-        const singleTrackWidth = content.scrollWidth / 2;
-        const autoNext = wrapper.scrollLeft + 1.2;
-
-        lenisHorizontal.scrollTo(autoNext, { immediate: true });
-
-        if (singleTrackWidth > 0 && wrapper.scrollLeft >= singleTrackWidth) {
-          lenisHorizontal.scrollTo(wrapper.scrollLeft - singleTrackWidth, { immediate: true });
-        }
-      }
-
-      lenisHorizontal.raf(time);
-      rafId = window.requestAnimationFrame(raf);
-    };
-
-    rafId = window.requestAnimationFrame(raf);
-
-    return () => {
-      window.cancelAnimationFrame(rafId);
-      wrapper.removeEventListener("wheel", onWheel);
-      wrapper.removeEventListener("mouseenter", pauseAutoSlide);
-      wrapper.removeEventListener("mouseleave", resumeAutoSlide);
-      wrapper.removeEventListener("focusin", pauseAutoSlide);
-      wrapper.removeEventListener("focusout", resumeAutoSlide);
-      wrapper.removeEventListener("pointerdown", pauseAutoSlide);
-      wrapper.removeEventListener("pointerup", resumeAutoSlide);
-      wrapper.removeEventListener("touchstart", pauseAutoSlide);
-      wrapper.removeEventListener("touchend", resumeAutoSlide);
-      lenisHorizontal.destroy();
-      skillTapeLenisRef.current = null;
-    };
-  }, []);
-
   const toggleTheme = () => {
     if (!isThemeReady) return;
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
@@ -335,11 +262,13 @@ export default function Home() {
 
     event.preventDefault();
     setActiveSection(href);
+
     if (lenisRef.current) {
-      lenisRef.current.scrollTo(target, { duration: 0.55 });
+      lenisRef.current.scrollTo(target, { duration: 0.62, offset: -88 });
     } else {
       target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+
     window.history.replaceState(null, "", href);
   };
 
@@ -358,11 +287,7 @@ export default function Home() {
               href={item.href}
               onClick={(event) => handleSmoothNav(event, item.href)}
               aria-current={activeSection === item.href ? "page" : undefined}
-              className={`border px-3 py-1 text-[11px] font-black uppercase tracking-widest transition-colors ${
-                activeSection === item.href
-                  ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
-                  : "border-black/40 bg-white/70 hover:bg-black hover:text-white dark:border-white/40 dark:bg-black/50 dark:hover:bg-white dark:hover:text-black"
-              }`}
+              className={activeSection === item.href ? "is-active" : ""}
             >
               {item.label}
             </a>
@@ -393,40 +318,21 @@ export default function Home() {
             <p className="fade-up mt-3 text-xs font-black uppercase tracking-[0.3em] text-black/50 dark:text-white/40 md:text-sm">
               Full Stack Developer / AI Product Builder
             </p>
-            <p className="fade-up mt-8 max-w-4xl text-lg font-bold leading-loose md:text-xl">
-              I design and ship clean digital products where engineering meets business impact.
-              From recruitment intelligence to ML-enabled search, I focus on systems that scale,
-              move fast, and create measurable outcomes.
+            <p>
+              My core stack is MERN and Next.js, with strong backend work in Python and PHP ecosystems. I have built
+              recruitment SaaS, ML-based prediction workflows, and education-focused platforms.
             </p>
-            <p className="fade-up mt-6 border-l-2 border-black pl-4 font-mono text-xs uppercase leading-relaxed tracking-widest text-black/60 dark:border-white dark:text-white/60 md:text-sm">
-              Building practical software. Shipping with intent. Optimizing for real users.
+            <p>
+              I care about maintainable code, measurable performance, and team-friendly delivery. I am open to exciting
+              engineering opportunities.
             </p>
-            <div className="fade-up mt-8 flex flex-wrap gap-2">
-              <a
-                href="#projects"
-                onClick={(event) => handleSmoothNav(event, "#projects")}
-                className="border-2 border-black bg-black px-4 py-2 text-sm font-black uppercase tracking-tight text-white transition-colors hover:bg-white hover:text-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white"
-              >
-                Explore Projects
-              </a>
-              <a
-                href="#contact"
-                onClick={(event) => handleSmoothNav(event, "#contact")}
-                className="border-2 border-black px-4 py-2 text-sm font-black uppercase tracking-tight transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
-              >
-                Let us Collaborate
-              </a>
-            </div>
           </div>
 
-          <aside className="fade-up grid w-full max-w-xs grid-cols-2 gap-2 self-end sm:max-w-sm lg:grid-cols-1 lg:gap-3">
-            {quickStats.map((stat) => (
-              <article key={stat.label} className="border-2 border-black bg-white/80 p-3 backdrop-blur dark:border-white dark:bg-black/45">
-                <p className="text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/50">{stat.label}</p>
-                <p className="mt-1 text-base font-black uppercase tracking-tight">{stat.value}</p>
-              </article>
+          <div className="highlight-panel">
+            {highlights.map((item) => (
+              <p key={item}>{item}</p>
             ))}
-          </aside>
+          </div>
         </div>
       </section>
 
@@ -449,16 +355,15 @@ export default function Home() {
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Engineering stack</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {skills.map((group) => (
-            <article
-              key={group.category}
-              className="skills-category-card relative border-2 border-black bg-white/80 p-4 transition-colors dark:border-white dark:bg-black/45"
-            >
-              <h3 className="text-sm font-black uppercase tracking-widest">{group.category}</h3>
-              <ul className="mt-3 space-y-1 pl-5 font-bold">
+            <article key={group.category} className="zed-card skill-card">
+              <h3>{group.category}</h3>
+              <div className="pill-wrap">
                 {group.items.map((item) => (
-                  <li key={item}>{item}</li>
+                  <span key={item} className="pill">
+                    {item}
+                  </span>
                 ))}
-              </ul>
+              </div>
             </article>
           ))}
         </div>
@@ -492,11 +397,11 @@ export default function Home() {
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Experience & Education</h2>
         <div className="space-y-4">
           {journey.map((item) => (
-            <article key={`${item.period}-${item.role}`} className="border-2 border-black p-4 transition-colors dark:border-white">
-              <p className="font-mono text-xs font-black uppercase tracking-widest text-black/40 dark:text-white/40">{item.period}</p>
-              <h3 className="mt-2 text-xl font-black uppercase tracking-tight">{item.role}</h3>
-              <p className="mt-1 text-sm font-black uppercase tracking-wide text-black/50 dark:text-white/50">{item.org}</p>
-              <p className="mt-3 font-bold leading-loose">{item.detail}</p>
+            <article key={`${item.period}-${item.role}`} className="timeline-item">
+              <p className="timeline-period">{item.period}</p>
+              <h3>{item.role}</h3>
+              <p className="timeline-org">{item.org}</p>
+              <p>{item.detail}</p>
             </article>
           ))}
         </div>
@@ -513,21 +418,13 @@ export default function Home() {
               <p className="mt-3 font-bold leading-loose">{project.description}</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="border border-black px-2 py-1 text-[10px] font-black uppercase tracking-widest transition-colors dark:border-white"
-                  >
+                  <span key={tag} className="pill">
                     {tag}
                   </span>
                 ))}
               </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-wider transition-colors hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black"
-                >
+              <div className="card-links">
+                <a href={project.github} target="_blank" rel="noopener noreferrer">
                   GitHub
                 </a>
                 {project.live && (
@@ -551,20 +448,12 @@ export default function Home() {
         <h2 className="mb-5 text-3xl font-black uppercase tracking-tight">Credentials</h2>
         <div className="grid gap-4 md:grid-cols-3">
           {certifications.map((cert) => (
-            <article key={cert.title} className="border-2 border-black p-4 transition-colors dark:border-white">
-              <p className="font-mono text-xs font-black uppercase tracking-widest text-black/40 dark:text-white/40">{cert.date}</p>
-              <h3 className="mt-2 text-base font-black uppercase tracking-tight">{cert.title}</h3>
-              <p className="mt-1 text-xs font-black uppercase tracking-wide text-black/50 dark:text-white/50">{cert.issuer}</p>
-              <p className="mt-3 font-bold leading-loose">{cert.description}</p>
+            <article key={cert.title} className="zed-card certification-card">
+              <p className="card-date">{cert.date}</p>
+              <h3>{cert.title}</h3>
+              <p className="cert-issuer">{cert.issuer}</p>
+              <p>{cert.description}</p>
             </article>
-          ))}
-        </div>
-
-        <div className="mt-4 border-2 border-dashed border-black/20 p-4 transition-colors dark:border-white/20">
-          {highlights.map((item) => (
-            <p key={item} className="font-bold leading-loose">
-              {item}
-            </p>
           ))}
         </div>
       </section>
@@ -598,6 +487,8 @@ export default function Home() {
           </a>
         </div>
       </section>
+
+      <footer className="site-footer">© 2026 Rohit Deshmukh</footer>
     </main>
   );
 }

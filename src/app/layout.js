@@ -2,14 +2,24 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
-const geistSans = Geist({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  variable: "--font-inter",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
-  variable: "--font-geist-mono",
+  weight: ["400", "500", "600"],
+  variable: "--font-ibm-plex-sans",
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-ibm-plex-mono",
+  display: "swap",
 });
 
 const inter = Inter({
@@ -18,8 +28,9 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "ShipWithRohit",
-  description: "Portfolio of Rohit Deshmukh",
+  title: "Rohit Deshmukh - Full Stack Developer / AI Product Builder",
+  description:
+    "Portfolio of Rohit Deshmukh, a full-stack developer building AI products, scalable web apps, and product-focused engineering systems.",
 };
 
 export default function RootLayout({ children }) {
