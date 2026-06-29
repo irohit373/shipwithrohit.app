@@ -25,6 +25,13 @@ const skills = [
 
 const journey = [
   {
+    period: "April 2026 - Current",
+    role: "Backend Intern",
+    org: "Aligntogether, Bhopal",
+    detail:
+      "Code Optimization & Maintenance: Implementing optimized solutions that delivered measurable impact on performance and cost efficiency. Maintained code across projects while migrating to new tech stacks. Server Migration & DevOps: Assisted in e-commerce platform server migration, and strengthening infrastructure skills while ensuring zero downtime.",
+  },
+  {
     period: "July 2025 - Oct 2025",
     role: "PHP Web Developer & Networking Intern",
     org: "MAIG Innovation, Indore",
@@ -69,7 +76,6 @@ const projects = [
     description:
       "Flight discovery platform integrating multiple airline sources, with smart caching for lower latency and ML price prediction near 85% accuracy.",
     tags: ["Next.js", "Python", "Flask", "MongoDB", "Scikit-learn", "PyTorch"],
-    live: "#",
     github: "https://github.com/irohit373/jetlens",
   },
   {
@@ -78,7 +84,7 @@ const projects = [
     description:
       "Scalable MERN-based educational CMS with real-time content workflows, JWT auth, and optimized MongoDB query performance.",
     tags: ["MongoDB", "Express.js", "React", "Node.js"],
-    live: "https://learnify-ed-tech-platform-mern.vercel.app/",
+
     github: "https://github.com/irohit373/Learnify-EdTech-Platform-MERN",
   },
 ];
@@ -386,9 +392,11 @@ export default function Home() {
                 <a href={project.github} target="_blank" rel="noopener noreferrer">
                   GitHub
                 </a>
-                <a href={project.live} target="_blank" rel="noopener noreferrer">
-                  Live
-                </a>
+                {project.live && (
+                  <a href={project.live} target="_blank" rel="noopener noreferrer">
+                    Live
+                  </a>
+                )}
               </div>
             </article>
           ))}
