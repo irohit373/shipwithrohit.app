@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Lenis from "lenis";
 import { useTheme } from "next-themes";
 
@@ -133,6 +133,10 @@ const quickStats = [
 
 const skillTape = skills.flatMap((group) => group.items.map((item) => `${group.category} - ${item}`));
 
+const subscribeToClientSnapshot = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 function SectionHeader({ label, title, subtitle }) {
   return (
     <div className="section-heading">
@@ -145,7 +149,8 @@ function SectionHeader({ label, title, subtitle }) {
 
 export default function Home() {
   const { resolvedTheme, setTheme } = useTheme();
-  const isThemeReady = typeof resolvedTheme === "string";
+  const isMounted = useSyncExternalStore(subscribeToClientSnapshot, getClientSnapshot, getServerSnapshot);
+  const isThemeReady = isMounted && typeof resolvedTheme === "string";
   const [activeSection, setActiveSection] = useState("#about");
   const [isScrolled, setIsScrolled] = useState(false);
   const lenisRef = useRef(null);
