@@ -91,11 +91,11 @@ const projects = [
 
 const certifications = [
   {
-    title: "LinkedIn Learning Certificate",
+    title: "LinkedIn Learning Certificate of Completion",
     issuer: "LinkedIn Learning",
-    date: "2025",
+    date: "July 14, 2026",
     description: "Verified certificate of completion.",
-    link: "https://www.linkedin.com/learning/certificates/34682c5d2ff388adea979807f110dfc26c022a5c74035a23c5335752d0a28c01?trk=share_certificate"
+    link: "https://www.linkedin.com/learning/certificates/34682c5d2ff388adea979807f110dfc26c022a5c74035a23c5335752d0a28c01"
   },
   {
     title: "Python Programming Certification",
