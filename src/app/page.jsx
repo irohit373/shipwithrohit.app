@@ -91,6 +91,13 @@ const projects = [
 
 const certifications = [
   {
+    title: "LinkedIn Learning Certificate",
+    issuer: "LinkedIn Learning",
+    date: "2025",
+    description: "Verified certificate of completion.",
+    link: "https://www.linkedin.com/learning/certificates/34682c5d2ff388adea979807f110dfc26c022a5c74035a23c5335752d0a28c01?trk=share_certificate"
+  },
+  {
     title: "Python Programming Certification",
     issuer: "Cisco Networking Academy",
     date: "2024",
@@ -419,7 +426,13 @@ export default function Home() {
           {certifications.map((cert) => (
             <article key={cert.title} className="zed-card certification-card">
               <p className="card-date">{cert.date}</p>
-              <h3>{cert.title}</h3>
+              {cert.link ? (
+                <a href={cert.link} target="_blank" rel="noopener noreferrer" className="cert-title-link">
+                  <h3>{cert.title}</h3>
+                </a>
+              ) : (
+                <h3>{cert.title}</h3>
+              )}
               <p className="cert-issuer">{cert.issuer}</p>
               <p>{cert.description}</p>
             </article>
