@@ -15,17 +15,17 @@ const skills = [
   },
   {
     category: "Backend/APIs",
-    items: ["REST APIs", "WebSocket", "JWT", "OAuth", "LLM Integration"],
+    items: ["REST APIs", "WebSocket", "JWT", "OAuth", "LLM Integration", "AI Orchestration"],
   },
   {
     category: "Tools & DevOps",
-    items: ["Git", "Docker", "AWS", "Linux/VPS", "CI/CD", "MongoDB", "MySQL"],
+    items: ["Git", "Docker", "AWS", "GCP", "Linux/VPS", "CI/CD", "MongoDB", "MySQL", "PostgresSQL", "Vercel"],
   },
 ];
 
 const journey = [
   {
-    period: "April 2026 - Current",
+    period: "April 2026 - Jun 2026",
     role: "Backend Intern",
     org: "Aligntogether, Bhopal",
     detail:
@@ -103,10 +103,16 @@ const certifications = [
     description: "Applied Python in practical and industry-oriented scenarios.",
   },
   {
-    title: "SCA Foundation Certification",
-    issuer: "SCA (Digital Content & Agile)",
-    date: "2023",
-    description: "Digital content operations and Agile fundamentals.",
+    title: "Scrimba AI Certification",
+    issuer: "Scrimba",
+    date: "2026",
+    description: "Scrimba AI certification on AI orchestration, AI integration and other.",
+  },
+  {
+    title: "",
+    issuer: "",
+    date: "",
+    description: ""
   },
 ];
 
@@ -122,6 +128,7 @@ const navItems = [
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
   { label: "Contact", href: "#contact" },
+  // { label: "RESUME", href: ""}  //Add genunine resume URL
 ];
 
 const quickStats = [
@@ -131,8 +138,9 @@ const quickStats = [
   { label: "Shipping Focus", value: "Fast + Stable" },
 ];
 
+// Understand how this is working...
 const skillTape = skills.flatMap((group) => group.items.map((item) => `${group.category} - ${item}`));
-
+//Understand this too...
 const subscribeToClientSnapshot = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
@@ -155,12 +163,12 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const lenisRef = useRef(null);
 
-  useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  // useEffect(() => {
+  //   const onScroll = () => setIsScrolled(window.scrollY > 12);
+  //   onScroll();
+  //   window.addEventListener("scroll", onScroll, { passive: true });
+  //   return () => window.removeEventListener("scroll", onScroll);
+  // }, []);
 
   useEffect(() => {
     const sectionElements = navItems
