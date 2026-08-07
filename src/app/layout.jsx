@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/next';
 
+// Fonts
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -22,6 +23,7 @@ const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-ibm-plex-mono",
   display: "swap",
 });
+
 
 export const metadata = {
   title: "Rohit Deshmukh - Full Stack Developer / AI Product Builder",

@@ -4,19 +4,21 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Lenis from "lenis";
 import { useTheme } from "next-themes";
 import SiteNav from "@/components/layout/SiteNav";
+
 import HeroSection from "@/components/hero/HeroSection";
 import HeroSocialLinks from "@/components/hero/HeroSocialLinks";
 import SectionHeader from "@/components/ui/SectionHeader";
+
+import AboutSection from "@/components/sections/AboutSection";
+import SkillsSection from "@/components/sections/SkillsSection";
+import ExperienceSection from "@/components/sections/ExperienceSection";
+import ProjectsSection from "@/components/sections/ProjectsSection";
+import CertificationSection from "@/components/sections/CertificationSection";
+
 import {
   navItems,
-  skills,
-  journey,
-  projects,
-  certifications,
-  highlights,
-  aboutContent,
+
   contactContent,
-  skillTape,
 } from "@/data/site";
 
 const subscribeToClientSnapshot = () => () => {};
@@ -94,7 +96,16 @@ export default function Home() {
 
   const toggleTheme = () => {
     if (!isThemeReady) return;
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+    const newTheme = resolvedTheme === "dark" ? "light" : "dark";
+
+    if (!document.startViewTransition) {
+      setTheme(newTheme);
+      return;
+    }
+
+    document.startViewTransition(() => {
+      setTheme(newTheme);
+    });
   };
 
   const handleSmoothNav = (event, href) => {
@@ -107,7 +118,7 @@ export default function Home() {
     setActiveSection(href);
 
     if (lenisRef.current) {
-      lenisRef.current.scrollTo(target, { duration: 0.62, offset: -88 });
+      lenisRef.current.scrollTo(target, { duration: 0.62, offset: 0 });
     } else {
       target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -128,129 +139,15 @@ export default function Home() {
 
       <HeroSection onSmoothNav={handleSmoothNav} />
 
-      <section id="about" className="page-section">
-        <SectionHeader
-          label="About"
-          title="Practical software, shipped with intent."
-          subtitle={aboutContent.subtitle}
-        />
+      <AboutSection />
 
-        <div className="about-grid">
-          <div className="about-copy">
-            {aboutContent.paragraphs.map((paragraph) => (
-              <p key={paragraph.slice(0, 32)}>{paragraph}</p>
-            ))}
-          </div>
+      <SkillsSection />
 
-          <div className="highlight-panel">
-            {highlights.map((item) => (
-              <p key={item}>{item}</p>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ExperienceSection />
 
-      <section id="skills" className="page-section">
-        <SectionHeader
-          label="Skills"
-          title="Engineering stack"
-          subtitle="A focused toolkit for product-grade web apps, APIs, deployment, and applied AI workflows."
-        />
+      <ProjectsSection />
 
-        <div className="card-grid skills-grid">
-          {skills.map((group) => (
-            <article key={group.category} className="zed-card skill-card">
-              <h3>{group.category}</h3>
-              <div className="pill-wrap">
-                {group.items.map((item) => (
-                  <span key={item} className="pill">
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <div className="skill-tape" aria-label="Skills tape">
-          {[...skillTape, ...skillTape].map((skill, index) => (
-            <span key={`${skill}-${index}`}>{skill}</span>
-          ))}
-        </div>
-      </section>
-
-      <section id="experience" className="page-section">
-        <SectionHeader
-          label="Experience"
-          title="Experience & education"
-          subtitle="A timeline of internships, engineering education, and production-focused learning."
-        />
-
-        <div className="timeline">
-          {journey.map((item) => (
-            <article key={`${item.period}-${item.role}`} className="timeline-item">
-              <p className="timeline-period">{item.period}</p>
-              <h3>{item.role}</h3>
-              <p className="timeline-org">{item.org}</p>
-              <p>{item.detail}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="projects" className="page-section">
-        <SectionHeader
-          label="Projects"
-          title="Selected work"
-          subtitle="Product builds across AI recruiting, ML search, and education platforms."
-        />
-
-        <div className="card-grid project-grid">
-          {projects.map((project) => (
-            <article key={project.title} className="zed-card project-card">
-              <p className="card-date">{project.date}</p>
-              <h3>{project.title}</h3>
-              <p>{project.description}</p>
-              <div className="pill-wrap">
-                {project.tags.map((tag) => (
-                  <span key={tag} className="pill">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <div className="card-links">
-                <a href={project.github} target="_blank" rel="noopener noreferrer">
-                  GitHub
-                </a>
-                {project.live && (
-                  <a href={project.live} target="_blank" rel="noopener noreferrer">
-                    Live
-                  </a>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="page-section">
-        <SectionHeader
-          label="Credentials"
-          title="Certifications"
-          subtitle="Focused learning across Python, industry application, and agile digital content operations."
-        />
-
-        <div className="card-grid certification-grid">
-          {certifications.map((cert) => (
-            <article key={cert.title} className="zed-card certification-card">
-              <p className="card-date">{cert.date}</p>
-              <h3>{cert.title}</h3>
-              <p className="cert-issuer">{cert.issuer}</p>
-              <p>{cert.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+      <CertificationSection />
 
       <section id="contact" className="contact-section">
         <SectionHeader

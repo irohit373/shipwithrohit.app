@@ -80,18 +80,11 @@ a {
 
 .site-nav {
   position: fixed;
-  top: 16px;
-  left: 50%;
+  top: 0;
+  left: 0;
   z-index: 50;
-  display: grid;
-  width: min(calc(100% - 32px), 1160px);
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 18px;
-  transform: translateX(-50%);
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 10px 12px 10px 18px;
+  width: 100%;
+  border-bottom: 1px solid transparent;
   color: var(--heading);
   transition: background-color 220ms var(--ease), border-color 220ms var(--ease), box-shadow 220ms var(--ease);
 }
@@ -103,10 +96,20 @@ a {
   backdrop-filter: blur(18px);
 }
 
+.nav-container {
+  display: grid;
+  width: min(calc(100% - 32px), 1160px);
+  margin: 0 auto;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 0;
+}
+
 .site-mark {
   width: fit-content;
   font-family: var(--font-ibm-plex-mono), monospace;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 600;
   letter-spacing: 0;
 }
@@ -114,11 +117,7 @@ a {
 .site-links {
   display: flex;
   align-items: center;
-  gap: 3px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface) 72%, transparent);
-  padding: 4px;
+  gap: 12px;
 }
 
 .site-links a,
@@ -140,8 +139,7 @@ a {
 .site-links a:hover,
 .site-links a.is-active,
 .site-links a[aria-current="page"] {
-  background: var(--card);
-  color: var(--heading);
+  color: var(--accent);
 }
 
 .theme-toggle {
@@ -173,8 +171,10 @@ a {
   display: grid;
   min-height: 92vh;
   grid-template-columns: minmax(0, 1fr);
-  align-content: end;
-  gap: 54px;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: 32px;
   padding: 132px 0 54px;
   isolation: isolate;
 }
@@ -192,6 +192,9 @@ a {
 
 .hero-copy {
   max-width: 980px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .eyebrow,
@@ -223,8 +226,9 @@ h3 {
 
 h1 {
   max-width: 980px;
-  font-size: clamp(4rem, 12vw, 8.8rem);
-  line-height: 0.96;
+  font-size: clamp(2.8rem, 6.5vw, 5.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
 }
 
 .hero-role {
@@ -251,6 +255,7 @@ h1 {
 .hero-social-links {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
   margin-top: 28px;
 }
@@ -294,6 +299,7 @@ h1 {
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
   margin-top: 28px;
 }
@@ -383,6 +389,11 @@ h1 {
   border-color: var(--border-strong);
   background: var(--hover-tint);
   box-shadow: var(--shadow);
+}
+
+.project-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 10px 40px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .page-section,

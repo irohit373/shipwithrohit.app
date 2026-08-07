@@ -3,7 +3,7 @@ export const socialLinks = {
   github: { href: "https://github.com/irohit373", label: "GitHub" },
   linkedin: { href: "https://linkedin.com/in/irohit373", label: "LinkedIn" },
   resume: {
-    href: "https://drive.google.com/file/d/PLACEHOLDER/view",
+    href: "https://drive.google.com/file/d/1hnE8K5k_a2KZwlxEou6Z2W503NIsNGdM/view",
     label: "Resume",
     external: true,
   },
@@ -14,8 +14,8 @@ export const navItems = [
   { label: "Skills", href: "#skills" },
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
-  { label: "Resume", href: socialLinks.resume.href, external: true },
   { label: "Contact", href: "#contact" },
+  { label: "Resume", href: socialLinks.resume.href, external: true },
 ];
 
 export const quickStats = [
@@ -30,7 +30,7 @@ export const heroContent = {
   name: "Rohit Deshmukh",
   role: "Full Stack Developer / AI Product Builder",
   intro:
-    "I design and ship clean digital products where engineering meets business impact. From recruitment intelligence to ML-enabled search, I focus on systems that scale, move fast, and create measurable outcomes. Currently interning at Aligntogether on backend optimization while shipping AI-first products on the side.",
+    "I design and ship clean digital products where engineering meets business impact. I focus on systems that scale, move fast, and create measurable outcomes. shipping AI-first products on the side.",
 };
 
 export const skills = [
@@ -55,14 +55,14 @@ export const skills = [
 export const journey = [
   {
     period: "April 2026 - Jun 2026",
-    role: "Backend Intern",
-    org: "Aligntogether, Bhopal",
+    role: "Software Development Engineer - Intern",
+    org: "Aligntogether Solutions, Bhopal",
     detail:
       "Code Optimization & Maintenance: Implementing optimized solutions that delivered measurable impact on performance and cost efficiency. Maintained code across projects while migrating to new tech stacks. Server Migration & DevOps: Assisted in e-commerce platform server migration, and strengthening infrastructure skills while ensuring zero downtime.",
   },
   {
     period: "July 2025 - Oct 2025",
-    role: "PHP Web Developer & Networking Intern",
+    role: "PHP Web Developer & Networking - Intern",
     org: "MAIG Innovation, Indore",
     detail:
       "Handled a major CodeIgniter migration, shipped user-facing improvements, configured Linux cloud setups, and supported CI/CD workflows with Git and Bitbucket.",
@@ -76,7 +76,7 @@ export const journey = [
   },
   {
     period: "Jan 2022 - Mar 2022",
-    role: "Web Backend Developer Intern",
+    role: "Backend Developer - Intern",
     org: "Holy Faith Welfare Foundation, Bhopal",
     detail:
       "Built backend modules with PHP and MySQL, implemented session authentication and RBAC, and collaborated in Agile sprints.",
@@ -92,7 +92,6 @@ export const journey = [
 export const projects = [
   {
     title: "Velocity-HR - AI Recruitment Platform",
-    date: "December 2025",
     description:
       "AI recruitment SaaS with resume screening, candidate matching, and fast interview scheduling — cut hiring cycle time by around 60% for early adopters.",
     tags: ["Next.js", "Python", "FastAPI", "PostgreSQL", "OpenAI API"],
@@ -101,7 +100,6 @@ export const projects = [
   },
   {
     title: "JetLens - ML Flight Search Platform",
-    date: "June 2025",
     description:
       "Flight discovery platform integrating multiple airline sources, with smart caching for lower latency and ML price prediction near 85% accuracy.",
     tags: ["Next.js", "Python", "Flask", "MongoDB", "Scikit-learn", "PyTorch"],
@@ -109,7 +107,6 @@ export const projects = [
   },
   {
     title: "Learnify - Educational CMS Platform",
-    date: "November 2024",
     description:
       "Scalable MERN-based educational CMS with real-time content workflows, JWT auth, and optimized MongoDB queries for faster page loads.",
     tags: ["MongoDB", "Express.js", "React", "Node.js"],
@@ -147,7 +144,7 @@ export const highlights = [
 export const aboutContent = {
   subtitle: "A full-stack builder focused on maintainable systems, useful AI features, and product outcomes.",
   paragraphs: [
-    "I am currently pursuing B.Tech in Computer Science and Business Systems at RGPV, Bhopal. I enjoy solving real-world problems through scalable web engineering and AI-backed features.",
+    "I enjoy solving real-world problems through scalable engineering and AI-backed features.",
     "My core stack is MERN and Next.js, with strong backend work in Python and PHP ecosystems. I have built recruitment SaaS, ML-based prediction workflows, and education-focused platforms.",
     "I care about maintainable code, measurable performance, and team-friendly delivery. Open to full-stack and AI product roles where I can ship meaningful work.",
   ],
