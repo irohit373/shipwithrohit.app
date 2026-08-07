@@ -58,34 +58,32 @@ export const journey = [
     role: "Software Development Engineer - Intern",
     org: "Aligntogether Solutions, Bhopal",
     detail:
-      "Code Optimization & Maintenance: Implementing optimized solutions that delivered measurable impact on performance and cost efficiency. Maintained code across projects while migrating to new tech stacks. Server Migration & DevOps: Assisted in e-commerce platform server migration, and strengthening infrastructure skills while ensuring zero downtime.",
+      "Optimized code, supported migrations, and helped with server/devops work while keeping systems stable.",
   },
   {
     period: "July 2025 - Oct 2025",
     role: "PHP Web Developer & Networking - Intern",
     org: "MAIG Innovation, Indore",
     detail:
-      "Handled a major CodeIgniter migration, shipped user-facing improvements, configured Linux cloud setups, and supported CI/CD workflows with Git and Bitbucket.",
+      "Handled a CodeIgniter migration, shipped improvements, and supported Networking, Linux, Git, and CI/CD work.",
   },
   {
     period: "Sept 2023 - June 2026",
     role: "B.Tech in Computer Science & Business Systems",
     org: "School of Information Technology, RGPV, Bhopal",
-    detail:
-      "CGPA 7.43/10. Key coursework included DSA, OOPS, DBMS, OS, Networking, System Design, and product thinking.",
+    detail: "CGPA 7.43/10. Coursework covered DSA, OOPS, DBMS, OS, networking, system design, and product thinking.",
   },
   {
     period: "Jan 2022 - Mar 2022",
     role: "Backend Developer - Intern",
     org: "Holy Faith Welfare Foundation, Bhopal",
-    detail:
-      "Built backend modules with PHP and MySQL, implemented session authentication and RBAC, and collaborated in Agile sprints.",
+    detail: "Built PHP and MySQL backend modules, added session auth and RBAC, and worked in Agile sprints.",
   },
   {
     period: "Sept 2020 - June 2023",
     role: "Diploma in Computer Science & Engineering",
     org: "Govt. Polytechnic College, Khirsadoh",
-    detail: "CGPA 8.42/10 with foundations in programming, data structures, and core computer science.",
+    detail: "CGPA 8.42/10 with a strong foundation in programming, data structures, and core CS.",
   },
 ];
 
@@ -174,7 +172,7 @@ export const highlights = [
 export const aboutContent = {
   subtitle: "A full-stack builder focused on maintainable systems, useful AI features, and product outcomes.",
   paragraphs: [
-    "I enjoy solving real-world problems through scalable engineering and AI-backed features.",
+    // "I enjoy solving real-world problems through scalable engineering and AI-backed features.",
     "My core stack is MERN and Next.js, with strong backend work in Python and PHP ecosystems. I have built recruitment SaaS, ML-based prediction workflows, and education-focused platforms.",
     "I care about maintainable code, measurable performance, and team-friendly delivery. Open to full-stack and AI product roles where I can ship meaningful work.",
   ],
