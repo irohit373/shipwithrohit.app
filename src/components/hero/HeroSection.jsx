@@ -11,7 +11,7 @@ export default function HeroSection({ onSmoothNav }) {
         <h1 id="hero-title">{heroContent.role}</h1>
         <p className="hero-intro">{heroContent.intro}</p>
 
-        <HeroSocialLinks className="hero-actions fade-up fade-up-delay-1" />
+        <HeroSocialLinks className="fade-up fade-up-delay-1" />
         
       </div>
     </section>

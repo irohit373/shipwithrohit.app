@@ -116,6 +116,36 @@ export const projects = [
 
 export const certifications = [
   {
+    title: "Docker Foundations Professional Certificate",
+    issuer: "Docker, Inc",
+    date: "Issued Jul 2026",
+    description: "Skills: Containerization.",
+  },
+  {
+    title: "Career Essentials in GitHub Professional Certificate",
+    issuer: "GitHub",
+    date: "Issued Jul 2026",
+    description: "Skills: GitHub.",
+  },
+  {
+    title: "Certificate of Completion: AI Fluency Framework & Foundations",
+    issuer: "Anthropic",
+    date: "Issued Jul 2026",
+    description: "Credential ID whr88u9qsk59.",
+  },
+  {
+    title: "Microsoft Azure Essentials Professional Certificate by Microsoft and LinkedIn",
+    issuer: "Microsoft",
+    date: "Issued Jul 2026",
+    description: "Skills: Cloud Computing, Microsoft Azure.",
+  },
+  {
+    title: "Advanced SQL for Query Tuning and Performance Optimization",
+    issuer: "LinkedIn",
+    date: "Issued Jul 2026",
+    description: "Skills: SQL.",
+  },
+  {
     title: "Python Programming Certification",
     issuer: "Cisco Networking Academy",
     date: "2024",
