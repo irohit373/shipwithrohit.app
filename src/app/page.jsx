@@ -3,157 +3,25 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Lenis from "lenis";
 import { useTheme } from "next-themes";
+import SiteNav from "@/components/layout/SiteNav";
+import HeroSection from "@/components/hero/HeroSection";
+import HeroSocialLinks from "@/components/hero/HeroSocialLinks";
+import SectionHeader from "@/components/ui/SectionHeader";
+import {
+  navItems,
+  skills,
+  journey,
+  projects,
+  certifications,
+  highlights,
+  aboutContent,
+  contactContent,
+  skillTape,
+} from "@/data/site";
 
-const skills = [
-  {
-    category: "Languages",
-    items: ["JavaScript (ES6+)", "TypeScript", "Python", "PHP", "C++"],
-  },
-  {
-    category: "Frameworks",
-    items: ["Next.js", "React", "Node.js", "Express.js", "Flask", "CodeIgniter"],
-  },
-  {
-    category: "Backend/APIs",
-    items: ["REST APIs", "WebSocket", "JWT", "OAuth", "LLM Integration", "AI Orchestration"],
-  },
-  {
-    category: "Tools & DevOps",
-    items: ["Git", "Docker", "AWS", "GCP", "Linux/VPS", "CI/CD", "MongoDB", "MySQL", "PostgresSQL", "Vercel"],
-  },
-];
-
-const journey = [
-  {
-    period: "April 2026 - Jun 2026",
-    role: "Backend Intern",
-    org: "Aligntogether, Bhopal",
-    detail:
-      "Code Optimization & Maintenance: Implementing optimized solutions that delivered measurable impact on performance and cost efficiency. Maintained code across projects while migrating to new tech stacks. Server Migration & DevOps: Assisted in e-commerce platform server migration, and strengthening infrastructure skills while ensuring zero downtime.",
-  },
-  {
-    period: "July 2025 - Oct 2025",
-    role: "PHP Web Developer & Networking Intern",
-    org: "MAIG Innovation, Indore",
-    detail:
-      "Handled a major CodeIgniter migration, shipped user-facing improvements, configured Linux cloud setups, and supported CI/CD workflows with Git and Bitbucket.",
-  },
-  {
-    period: "Sept 2023 - June 2026",
-    role: "B.Tech in Computer Science & Business Systems",
-    org: "School of Information Technology, RGPV, Bhopal",
-    detail:
-      "CGPA 7.43/10. Key coursework included DSA, OOPS, DBMS, OS, Networking, System Design, and product thinking.",
-  },
-  {
-    period: "Jan 2022 - Mar 2022",
-    role: "Web Backend Developer Intern",
-    org: "Holy Faith Welfare Foundation, Bhopal",
-    detail:
-      "Built backend modules with PHP and MySQL, implemented session authentication and RBAC, and collaborated in Agile sprints.",
-  },
-  {
-    period: "Sept 2020 - June 2023",
-    role: "Diploma in Computer Science & Engineering",
-    org: "Govt. Polytechnic College, Khirsadoh",
-    detail: "CGPA 8.42/10 with foundations in programming, data structures, and core computer science.",
-  },
-];
-
-const projects = [
-  {
-    title: "Velocity-HR - AI Recruitment Platform",
-    date: "December 2025",
-    description:
-      "AI recruitment SaaS with resume screening, candidate matching, and fast interview scheduling, designed to cut hiring cycle time by around 60%.",
-    tags: ["Next.js", "Python", "FastAPI", "PostgreSQL", "OpenAI API"],
-    live: "https://velocity-h.vercel.app",
-    github: "https://github.com/irohit373/Velocity-HR",
-  },
-  {
-    title: "JetLens - ML Flight Search Platform",
-    date: "June 2025",
-    description:
-      "Flight discovery platform integrating multiple airline sources, with smart caching for lower latency and ML price prediction near 85% accuracy.",
-    tags: ["Next.js", "Python", "Flask", "MongoDB", "Scikit-learn", "PyTorch"],
-    github: "https://github.com/irohit373/jetlens",
-  },
-  {
-    title: "Learnify - Educational CMS Platform",
-    date: "November 2024",
-    description:
-      "Scalable MERN-based educational CMS with real-time content workflows, JWT auth, and optimized MongoDB query performance.",
-    tags: ["MongoDB", "Express.js", "React", "Node.js"],
-
-    github: "https://github.com/irohit373/Learnify-EdTech-Platform-MERN",
-  },
-];
-
-const certifications = [
-  {
-    title: "Python Programming Certification",
-    issuer: "Cisco Networking Academy",
-    date: "2024",
-    description: "Strong grounding in programming logic and data structures.",
-  },
-  {
-    title: "Industrial Python Certification",
-    issuer: "Infosys ICT Academy",
-    date: "2024",
-    description: "Applied Python in practical and industry-oriented scenarios.",
-  },
-  {
-    title: "Scrimba AI Certification",
-    issuer: "Scrimba",
-    date: "2026",
-    description: "Scrimba AI certification on AI orchestration, AI integration and other.",
-  },
-  {
-    title: "",
-    issuer: "",
-    date: "",
-    description: ""
-  },
-];
-
-const highlights = [
-  "Built AI-first products that reduced time-to-hire by nearly 60%.",
-  "Shipped ML integrations with price prediction accuracy around 85%.",
-  "Improved platform response speed with intelligent caching patterns.",
-];
-
-const navItems = [
-  { label: "About", href: "#about" },
-  { label: "Skills", href: "#skills" },
-  { label: "Experience", href: "#experience" },
-  { label: "Projects", href: "#projects" },
-  { label: "Contact", href: "#contact" },
-  // { label: "RESUME", href: ""}  //Add genunine resume URL
-];
-
-const quickStats = [
-  { label: "Products Built", value: "12+" },
-  { label: "AI/ML Projects", value: "6" },
-  { label: "Internships", value: "2" },
-  { label: "Shipping Focus", value: "Fast + Stable" },
-];
-
-// Understand how this is working...
-const skillTape = skills.flatMap((group) => group.items.map((item) => `${group.category} - ${item}`));
-//Understand this too...
 const subscribeToClientSnapshot = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
-
-function SectionHeader({ label, title, subtitle }) {
-  return (
-    <div className="section-heading">
-      <p className="section-label">{label}</p>
-      <h2>{title}</h2>
-      {subtitle ? <p className="section-subtitle">{subtitle}</p> : null}
-    </div>
-  );
-}
 
 export default function Home() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -163,15 +31,16 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const lenisRef = useRef(null);
 
-  // useEffect(() => {
-  //   const onScroll = () => setIsScrolled(window.scrollY > 12);
-  //   onScroll();
-  //   window.addEventListener("scroll", onScroll, { passive: true });
-  //   return () => window.removeEventListener("scroll", onScroll);
-  // }, []);
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const sectionElements = navItems
+      .filter((item) => !item.external)
       .map((item) => document.querySelector(item.href))
       .filter(Boolean);
 
@@ -248,81 +117,29 @@ export default function Home() {
 
   return (
     <main className="site-shell">
-      <header className={`site-nav ${isScrolled ? "site-nav--scrolled" : ""}`}>
-        <a href="#" className="site-mark" aria-label="Rohit Deshmukh home">
-          shipwithrohit
-        </a>
+      <SiteNav
+        isScrolled={isScrolled}
+        activeSection={activeSection}
+        isThemeReady={isThemeReady}
+        resolvedTheme={resolvedTheme}
+        onToggleTheme={toggleTheme}
+        onSmoothNav={handleSmoothNav}
+      />
 
-        <nav className="site-links" aria-label="Main navigation">
-          {navItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              onClick={(event) => handleSmoothNav(event, item.href)}
-              aria-current={activeSection === item.href ? "page" : undefined}
-              className={activeSection === item.href ? "is-active" : ""}
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
-
-        <button type="button" className="theme-toggle" onClick={toggleTheme} disabled={!isThemeReady}>
-          {isThemeReady && resolvedTheme === "dark" ? "Light" : "Dark"}
-        </button>
-      </header>
-
-      <section className="hero-section" aria-labelledby="hero-title">
-        <div className="hero-copy fade-up">
-          <p className="eyebrow">shipwithrohit.app</p>
-          <h1 id="hero-title">Rohit Deshmukh</h1>
-          <p className="hero-role">Full Stack Developer / AI Product Builder</p>
-          <p className="hero-intro">
-            I design and ship clean digital products where engineering meets business impact. From recruitment intelligence to
-            ML-enabled search, I focus on systems that scale, move fast, and create measurable outcomes.
-          </p>
-
-          <div className="hero-actions">
-            <a href="#projects" className="button button-primary" onClick={(event) => handleSmoothNav(event, "#projects")}>
-              Explore projects
-            </a>
-            <a href="#contact" className="button button-ghost" onClick={(event) => handleSmoothNav(event, "#contact")}>
-              Contact
-            </a>
-          </div>
-        </div>
-
-        <div className="stats-grid fade-up" aria-label="Quick stats">
-          {quickStats.map((stat) => (
-            <article key={stat.label} className="stat-card">
-              <p>{stat.label}</p>
-              <strong>{stat.value}</strong>
-            </article>
-          ))}
-        </div>
-      </section>
+      <HeroSection onSmoothNav={handleSmoothNav} />
 
       <section id="about" className="page-section">
         <SectionHeader
           label="About"
           title="Practical software, shipped with intent."
-          subtitle="A full-stack builder focused on maintainable systems, useful AI features, and product outcomes."
+          subtitle={aboutContent.subtitle}
         />
 
         <div className="about-grid">
           <div className="about-copy">
-            <p>
-              I am currently pursuing B.Tech in Computer Science and Business Systems at RGPV, Bhopal. I enjoy solving
-              real-world problems through scalable web engineering and AI-backed features.
-            </p>
-            <p>
-              My core stack is MERN and Next.js, with strong backend work in Python and PHP ecosystems. I have built
-              recruitment SaaS, ML-based prediction workflows, and education-focused platforms.
-            </p>
-            <p>
-              I care about maintainable code, measurable performance, and team-friendly delivery. I am open to exciting
-              engineering opportunities.
-            </p>
+            {aboutContent.paragraphs.map((paragraph) => (
+              <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+            ))}
           </div>
 
           <div className="highlight-panel">
@@ -439,18 +256,10 @@ export default function Home() {
         <SectionHeader
           label="Contact"
           title="Let us build something useful."
-          subtitle="Available for full-stack engineering, AI product builds, and product-minded development work."
+          subtitle={contactContent.subtitle}
         />
 
-        <div className="contact-links">
-          <a href="mailto:deshmukhrohit373@gmail.com">deshmukhrohit373@gmail.com</a>
-          <a href="https://github.com/irohit373" target="_blank" rel="noopener noreferrer">
-            GitHub
-          </a>
-          <a href="https://linkedin.com/in/irohit373" target="_blank" rel="noopener noreferrer">
-            LinkedIn
-          </a>
-        </div>
+        <HeroSocialLinks className="contact-social-links" />
       </section>
 
       <footer className="site-footer">© 2026 Rohit Deshmukh</footer>
