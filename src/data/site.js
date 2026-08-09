@@ -1,9 +1,9 @@
 export const socialLinks = {
-  email: { href: "mailto:deshmukhrohit373@gmail.com", label: "Email" },
-  github: { href: "https://github.com/irohit373", label: "GitHub" },
-  linkedin: { href: "https://linkedin.com/in/irohit373", label: "LinkedIn" },
+  email: { href: "mailto:irohit0100@gmail.com", label: "Email" },
+  github: { href: "https://github.com/irohit0001", label: "GitHub" },
+  linkedin: { href: "https://linkedin.com/in/irohit0001", label: "LinkedIn" },
   resume: {
-    href: "https://drive.google.com/file/d/1hnE8K5k_a2KZwlxEou6Z2W503NIsNGdM/view",
+    href: "https://drive.google.com/file/d/1SnEyEbG92RMJ5yuqfUs4szXv6td57R1G/view",
     label: "Resume",
     external: true,
   },
@@ -94,21 +94,21 @@ export const projects = [
       "AI recruitment SaaS with resume screening, candidate matching, and fast interview scheduling — cut hiring cycle time by around 60% for early adopters.",
     tags: ["Next.js", "Python", "FastAPI", "PostgreSQL", "OpenAI API"],
     live: "https://velocity-h.vercel.app",
-    github: "https://github.com/irohit373/Velocity-HR",
+    github: "https://github.com/irohit0001/Velocity-HR",
   },
   {
     title: "JetLens - ML Flight Search Platform",
     description:
       "Flight discovery platform integrating multiple airline sources, with smart caching for lower latency and ML price prediction near 85% accuracy.",
     tags: ["Next.js", "Python", "Flask", "MongoDB", "Scikit-learn", "PyTorch"],
-    github: "https://github.com/irohit373/jetlens",
+    github: "https://github.com/irohit0001/jetlens",
   },
   {
     title: "Learnify - Educational CMS Platform",
     description:
       "Scalable MERN-based educational CMS with real-time content workflows, JWT auth, and optimized MongoDB queries for faster page loads.",
     tags: ["MongoDB", "Express.js", "React", "Node.js"],
-    github: "https://github.com/irohit373/Learnify-EdTech-Platform-MERN",
+    github: "https://github.com/irohit0001/Learnify-EdTech-Platform-MERN",
   },
 ];
 
